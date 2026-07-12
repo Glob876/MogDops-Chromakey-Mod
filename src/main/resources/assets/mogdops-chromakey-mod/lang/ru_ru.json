@@ -1,0 +1,10 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Блок Хромакея",
+  "item.mogdops-chromakey-mod.chromakey_controller": "Контроллер Хромакея",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "ПКМ по блоку хромакея, чтобы сменить цвет.",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "Хромакей Мод МогДопа",
+  "message.mogdops-chromakey-mod.color_changed": "Цвет хромакея изменен на: %s",
+  "item.mogdops-chromakey-mod.chromakey_processor": "Процессор Хромакея",
+  "item.mogdops-chromakey-mod.chromakey_blank": "Заготовка Хромакея",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + ПКМ для переключения."
+}

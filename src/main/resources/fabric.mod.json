@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "mogdops-chromakey-mod",
+	"version": "${version}",
+	"name": "MogDop's Chromakey Mod",
+	"description": "A Minecraft mod for chromakey effects, created by MogDop.",
+	"authors": [
+		"MogDop"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"me.mogdop.ChromakeyMod"
+		],
+		"client": [
+			"me.mogdop.client.ChromakeyModClient"
+		]
+	},
+	"mixins": [
+		"chromakey.mixins.json",
+		{
+			"config": "chromakey.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

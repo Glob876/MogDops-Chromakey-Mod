@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false,color=green": { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "lit=true,color=green": { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "lit=false,color=blue": { "model": "mogdops-chromakey-mod:block/blue_chromakey_block" },
+    "lit=true,color=blue": { "model": "mogdops-chromakey-mod:block/blue_chromakey_block_lit" },
+    "lit=false,color=red": { "model": "mogdops-chromakey-mod:block/red_chromakey_block" },
+    "lit=true,color=red": { "model": "mogdops-chromakey-mod:block/red_chromakey_block_lit" }
+  }
+}
