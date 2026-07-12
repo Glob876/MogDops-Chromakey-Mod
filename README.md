@@ -1,28 +1,31 @@
-# MogDop's Chromakey Mod
+# MogDop's Chromakey Mod 🎬🟢🔵🔴
 
-Minecraft 1.21.1 Fabric Mod.
+A Fabric mod for Minecraft that adds functional, glowing chromakey blocks and convenient tools to control them. Designed for video editing, streaming, and special effects.
 
-## Setup
+## ✨ Features
 
-1. **Java 21**: This project is configured to use Java 21 (located at `/usr/lib/jvm/java-21-openjdk`).
-2. **IDE**: Import this folder as a Gradle project in IntelliJ IDEA or VS Code.
-3. **Run**:
-   - Use `./gradlew runClient` to launch Minecraft with the mod.
-   - Use `./gradlew build` to build the mod JAR.
+* **Connected Chromakey Blocks:** Supports Green, Blue, and Red colors for background removal.
+* **Toggleable Lighting:** Blocks can emit light to eliminate unwanted shadows in your shots.
+* **Flood Fill Propagation:** Toggling or recoloring a block instantly updates the entire connected structure.
+* **Chromakey Controller:** A convenient handheld tool to cycle colors across whole walls.
 
-## Project Structure
+## 🎮 Usage & Controls
 
-- `src/main/java/me/mogdop`: Main mod classes.
-- `src/client/java/me/mogdop/client`: Client-side rendering and logic.
-- `src/main/resources`: Assets and metadata.
+* **Toggle Light (On/Off):** 
+  Sneak (Shift) + Right-Click a block with an empty hand to toggle the light of the entire connected wall.
+* **Change Wall Color:** 
+  Right-Click any chromakey block while holding the **Chromakey Controller** to cycle the color of the entire structure: Green ➡️ Blue ➡️ Red ➡️ Green.
 
-## Mod Details
+## 💻 Development & Building
 
-- **Mod ID**: `mogdops-chromakey-mod`
-- **Minecraft**: `1.21.1`
-- **Fabric Loader**: `0.16.10`
-- **Fabric API**: `0.116.12+1.21.1`
+* **Run Client (Testing):**
+  ```bash
+  ./gradlew runClient
+  ```
+* **Build Mod JAR:**
+  ```bash
+  ./gradlew build
+  ```
+  The compiled `.jar` file will be generated in the `build/libs/` directory.
 
-## License
-
-This project is licensed under CC0-1.0.
+This version ONLY for 1.21.11.
