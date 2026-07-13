@@ -1,5 +1,5 @@
 {
-  "block.mogdops-chromakey-mod.green_chromakey_block": "Chromakey Block",
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Electric Chromakey Block",
   "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Right-Click to toggle.",
   "item.mogdops-chromakey-mod.chromakey_controller": "Chromakey Controller",
   "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Right-click a chromakey block to cycle its color.",

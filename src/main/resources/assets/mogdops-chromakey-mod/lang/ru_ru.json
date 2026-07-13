@@ -1,5 +1,5 @@
 {
-  "block.mogdops-chromakey-mod.green_chromakey_block": "Хромакей-блок",
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Электронный блок хромакея",
   "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + ПКМ, чтобы включить/выключить.",
   "item.mogdops-chromakey-mod.chromakey_controller": "Пульт управления хромакеем",
   "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Нажмите ПКМ по хромакею, чтобы переключить цвет.",

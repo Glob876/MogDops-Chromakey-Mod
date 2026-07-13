@@ -11,6 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.HashSet;
@@ -46,6 +47,15 @@ public class ChromakeyBlock extends Block {
         }
         
         return ActionResult.PASS;
+    }
+
+    @Override
+    protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+        // Если игрок зажал Shift, блок ломается мгновенно (даже рукой)
+        if (player.isSneaking()) {
+            return 1.0f;
+        }
+        return super.calcBlockBreakingDelta(state, player, world, pos);
     }
 
     @Override
