@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "mogdops-chromakey-mod:item/green_chromakey_block"
+    "model": "mogdops-chromakey-mod:item/green_chromakey_block",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 65331
+      }
+    ]
   }
 }
