@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "mogdops-chromakey-mod:block/green_chromakey"
+    "all": "mogdops-chromakey-mod:block/chromakey_off"
   }
 }

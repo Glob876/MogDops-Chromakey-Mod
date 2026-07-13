@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Bloco de Cromaqui",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Clique direito para alternar.",
+  "item.mogdops-chromakey-mod.chromakey_controller": "Controlador de Cromaqui",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Clique com o botão direito em um bloco de cromaqui para alternar a cor.",
+  "item.mogdops-chromakey-mod.chromakey_processor": "Processador de Cromaqui",
+  "item.mogdops-chromakey-mod.chromakey_blank": "Cromaqui em Branco",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "Cor de cromaqui alterada para: %s",
+  "color.mogdops-chromakey-mod.green": "Verde",
+  "color.mogdops-chromakey-mod.blue": "Azul",
+  "color.mogdops-chromakey-mod.red": "Vermelho",
+  "color.mogdops-chromakey-mod.yellow": "Amarelo",
+  "color.mogdops-chromakey-mod.cyan": "Ciano",
+  "color.mogdops-chromakey-mod.magenta": "Magenta",
+  "color.mogdops-chromakey-mod.white": "Branco",
+  "color.mogdops-chromakey-mod.black": "Preto"
+}

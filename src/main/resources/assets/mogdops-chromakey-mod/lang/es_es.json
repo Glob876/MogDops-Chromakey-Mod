@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Bloque de Croma",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Clic derecho para alternar.",
+  "item.mogdops-chromakey-mod.chromakey_controller": "Controlador de Croma",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Clic derecho en un bloque de croma para cambiar su color.",
+  "item.mogdops-chromakey-mod.chromakey_processor": "Procesador de Croma",
+  "item.mogdops-chromakey-mod.chromakey_blank": "Croma en Blanco",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "Color de croma cambiado a: %s",
+  "color.mogdops-chromakey-mod.green": "Verde",
+  "color.mogdops-chromakey-mod.blue": "Azul",
+  "color.mogdops-chromakey-mod.red": "Rojo",
+  "color.mogdops-chromakey-mod.yellow": "Amarillo",
+  "color.mogdops-chromakey-mod.cyan": "Cian",
+  "color.mogdops-chromakey-mod.magenta": "Magenta",
+  "color.mogdops-chromakey-mod.white": "Blanco",
+  "color.mogdops-chromakey-mod.black": "Negro"
+}

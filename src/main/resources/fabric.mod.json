@@ -3,13 +3,15 @@
 	"id": "mogdops-chromakey-mod",
 	"version": "${version}",
 	"name": "MogDop's Chromakey Mod",
-	"description": "A Minecraft mod for chromakey effects, created by MogDop.",
+	"icon": "assets/mogdops-chromakey-mod/icon.png",
+	"description": "A Mod for functional chromakey effects!",
 	"authors": [
 		"MogDop"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/Glob876/MogDops-Chromakey-Mod",
+		"sources": "https://github.com/Glob876/MogDops-Chromakey-Mod",
+		"issues": "https://github.com/Glob876/MogDops-Chromakey-Mod/issues"
 	},
 	"license": "CC0-1.0",
 	"environment": "*",

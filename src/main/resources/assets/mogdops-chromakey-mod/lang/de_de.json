@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Chroma-Key-Block",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Rechtsklick zum Umschalten.",
+  "item.mogdops-chromakey-mod.chromakey_controller": "Chroma-Key-Fernbedienung",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Rechtsklicke auf einen Chroma-Key-Block, um die Farbe zu ändern.",
+  "item.mogdops-chromakey-mod.chromakey_processor": "Chroma-Key-Prozessor",
+  "item.mogdops-chromakey-mod.chromakey_blank": "Chroma-Key-Rohling",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "Chroma-Key-Farbe geändert zu: %s",
+  "color.mogdops-chromakey-mod.green": "Grün",
+  "color.mogdops-chromakey-mod.blue": "Blau",
+  "color.mogdops-chromakey-mod.red": "Rot",
+  "color.mogdops-chromakey-mod.yellow": "Gelb",
+  "color.mogdops-chromakey-mod.cyan": "Türkis",
+  "color.mogdops-chromakey-mod.magenta": "Magenta",
+  "color.mogdops-chromakey-mod.white": "Weiß",
+  "color.mogdops-chromakey-mod.black": "Schwarz"
+}

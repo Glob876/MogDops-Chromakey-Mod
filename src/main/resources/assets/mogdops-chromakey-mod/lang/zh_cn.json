@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "色键方块",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + 右键点击以切换状态。",
+  "item.mogdops-chromakey-mod.chromakey_controller": "色键控制器",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "右键点击色键方块以循环切换颜色。",
+  "item.mogdops-chromakey-mod.chromakey_processor": "色键处理器",
+  "item.mogdops-chromakey-mod.chromakey_blank": "色键空白模板",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "色键颜色已更改为：%s",
+  "color.mogdops-chromakey-mod.green": "绿色",
+  "color.mogdops-chromakey-mod.blue": "蓝色",
+  "color.mogdops-chromakey-mod.red": "红色",
+  "color.mogdops-chromakey-mod.yellow": "黄色",
+  "color.mogdops-chromakey-mod.cyan": "青色",
+  "color.mogdops-chromakey-mod.magenta": "品红色",
+  "color.mogdops-chromakey-mod.white": "白色",
+  "color.mogdops-chromakey-mod.black": "黑色"
+}

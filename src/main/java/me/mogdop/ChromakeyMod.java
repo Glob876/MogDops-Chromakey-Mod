@@ -125,5 +125,7 @@ public class ChromakeyMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Инициализация MogDops Chromakey Mod...");
+        // Загружаем наш файл конфигурации
+        ChromakeyConfig.load();
     }
 }

@@ -25,18 +25,33 @@ public class ChromakeyControllerItem extends Item {
         if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
             if (!world.isClient()) {
                 ChromakeyColor currentColor = state.get(ChromakeyBlock.COLOR);
-                ChromakeyColor nextColor = switch (currentColor) {
-                    case GREEN -> ChromakeyColor.BLUE;
-                    case BLUE -> ChromakeyColor.RED;
-                    case RED -> ChromakeyColor.GREEN;
-                };
+                ChromakeyColor nextColor;
+
+                // Проверяем, зажат ли у игрока SHIFT (Sneaking)
+                if (player != null && player.isSneaking()) {
+                    // Переключаем только между Red, Green, White
+                    nextColor = switch (currentColor) {
+                        case RED -> ChromakeyColor.GREEN;
+                        case GREEN -> ChromakeyColor.WHITE;
+                        default -> ChromakeyColor.RED; // Сбрасывает любые другие цвета на RED
+                    };
+                } else {
+                    // Обычное нажатие ПКМ: перебираем все доступные цвета по полному кругу
+                    ChromakeyColor[] colors = ChromakeyColor.values();
+                    int nextIndex = (currentColor.ordinal() + 1) % colors.length;
+                    ChromakeyColor nextColorResult = colors[nextIndex];
+                    nextColor = nextColorResult;
+                }
 
                 BlockState newState = state.with(ChromakeyBlock.COLOR, nextColor);
                 world.setBlockState(pos, newState);
                 chromakeyBlock.propagateState(world, pos, newState); // Перекрашиваем всю стену!
 
-                if (player != null) {
-                    player.sendMessage(Text.translatable("message.mogdops-chromakey-mod.color_changed", nextColor.asString()).formatted(Formatting.GREEN), true);
+                // Отправляем сообщение только если в конфиге включен параметр showColorChangeMessage
+                if (player != null && ChromakeyConfig.showColorChangeMessage) {
+                    player.sendMessage(Text.translatable("message.mogdops-chromakey-mod.color_changed", 
+                        Text.translatable("color.mogdops-chromakey-mod." + nextColor.asString())
+                    ).formatted(Formatting.GREEN), true);
                 }
             }
             return ActionResult.SUCCESS;

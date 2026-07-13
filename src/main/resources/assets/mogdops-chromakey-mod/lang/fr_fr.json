@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "Bloc d'incrustation",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Clic droit pour basculer.",
+  "item.mogdops-chromakey-mod.chromakey_controller": "Contrôleur d'incrustation",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Faites un clic droit sur un bloc d'incrustation pour changer sa couleur.",
+  "item.mogdops-chromakey-mod.chromakey_processor": "Processeur d'incrustation",
+  "item.mogdops-chromakey-mod.chromakey_blank": "Support d'incrustation vierge",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "Couleur d'incrustation modifiée en : %s",
+  "color.mogdops-chromakey-mod.green": "Vert",
+  "color.mogdops-chromakey-mod.blue": "Bleu",
+  "color.mogdops-chromakey-mod.red": "Rouge",
+  "color.mogdops-chromakey-mod.yellow": "Jaune",
+  "color.mogdops-chromakey-mod.cyan": "Cyan",
+  "color.mogdops-chromakey-mod.magenta": "Magenta",
+  "color.mogdops-chromakey-mod.white": "Blanc",
+  "color.mogdops-chromakey-mod.black": "Noir"
+}

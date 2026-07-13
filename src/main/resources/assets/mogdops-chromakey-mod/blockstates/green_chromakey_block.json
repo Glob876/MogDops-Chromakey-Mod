@@ -1,10 +1,20 @@
 {
   "variants": {
-    "lit=false,color=green": { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
-    "lit=true,color=green": { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
-    "lit=false,color=blue": { "model": "mogdops-chromakey-mod:block/blue_chromakey_block" },
-    "lit=true,color=blue": { "model": "mogdops-chromakey-mod:block/blue_chromakey_block_lit" },
-    "lit=false,color=red": { "model": "mogdops-chromakey-mod:block/red_chromakey_block" },
-    "lit=true,color=red": { "model": "mogdops-chromakey-mod:block/red_chromakey_block_lit" }
+    "color=green,lit=false":   { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=green,lit=true":    { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=blue,lit=false":    { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=blue,lit=true":     { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=red,lit=false":     { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=red,lit=true":      { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=yellow,lit=false":  { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=yellow,lit=true":   { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=cyan,lit=false":    { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=cyan,lit=true":     { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=magenta,lit=false": { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=magenta,lit=true":  { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=white,lit=false":   { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=white,lit=true":    { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" },
+    "color=black,lit=false":   { "model": "mogdops-chromakey-mod:block/green_chromakey_block" },
+    "color=black,lit=true":    { "model": "mogdops-chromakey-mod:block/green_chromakey_block_lit" }
   }
 }

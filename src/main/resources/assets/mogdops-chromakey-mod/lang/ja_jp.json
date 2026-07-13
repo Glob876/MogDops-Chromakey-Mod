@@ -1,0 +1,18 @@
+{
+  "block.mogdops-chromakey-mod.green_chromakey_block": "クロマキーブロック",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + 右クリックで切り替え",
+  "item.mogdops-chromakey-mod.chromakey_controller": "クロマキーコントローラー",
+  "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "クロマキーブロックを右クリックして色を切り替えます",
+  "item.mogdops-chromakey-mod.chromakey_processor": "クロマキープロセッサー",
+  "item.mogdops-chromakey-mod.chromakey_blank": "クロマキーブランク",
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "クロマキーの色を%sに変更しました",
+  "color.mogdops-chromakey-mod.green": "緑",
+  "color.mogdops-chromakey-mod.blue": "青",
+  "color.mogdops-chromakey-mod.red": "赤",
+  "color.mogdops-chromakey-mod.yellow": "黄色",
+  "color.mogdops-chromakey-mod.cyan": "シアン",
+  "color.mogdops-chromakey-mod.magenta": "マゼンタ",
+  "color.mogdops-chromakey-mod.white": "白",
+  "color.mogdops-chromakey-mod.black": "黒"
+}

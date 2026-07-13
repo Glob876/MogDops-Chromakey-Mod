@@ -1,10 +1,18 @@
 {
   "block.mogdops-chromakey-mod.green_chromakey_block": "Chromakey Block",
+  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Right-Click to toggle.",
   "item.mogdops-chromakey-mod.chromakey_controller": "Chromakey Controller",
   "item.mogdops-chromakey-mod.chromakey_controller.tooltip": "Right-click a chromakey block to cycle its color.",
-  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
-  "message.mogdops-chromakey-mod.color_changed": "Chromakey color changed to: %s",
   "item.mogdops-chromakey-mod.chromakey_processor": "Chromakey Processor",
   "item.mogdops-chromakey-mod.chromakey_blank": "Chromakey Blank",
-  "block.mogdops-chromakey-mod.green_chromakey_block.tooltip": "Shift + Right-Click to toggle."
+  "itemGroup.mogdops-chromakey-mod.chromakey_item_group": "MogDop's Chromakey Mod",
+  "message.mogdops-chromakey-mod.color_changed": "Chromakey color changed to: %s",
+  "color.mogdops-chromakey-mod.green": "Green",
+  "color.mogdops-chromakey-mod.blue": "Blue",
+  "color.mogdops-chromakey-mod.red": "Red",
+  "color.mogdops-chromakey-mod.yellow": "Yellow",
+  "color.mogdops-chromakey-mod.cyan": "Cyan",
+  "color.mogdops-chromakey-mod.magenta": "Magenta",
+  "color.mogdops-chromakey-mod.white": "White",
+  "color.mogdops-chromakey-mod.black": "Black"
 }
