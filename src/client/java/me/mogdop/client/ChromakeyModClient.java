@@ -12,6 +12,12 @@ public class ChromakeyModClient implements ClientModInitializer {
         // Регистрируем окрашивание блока на основе его свойства COLOR
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
             if (tintIndex == 0) {
+                // Если блок выключен (LIT = false), возвращаем -1, чтобы
+                // частицы разрушения и сам блок оставались нейтрального серого цвета (chromakey_off)
+                if (state != null && state.contains(ChromakeyBlock.LIT) && !state.get(ChromakeyBlock.LIT)) {
+                    return -1;
+                }
+                
                 ChromakeyColor color = state.get(ChromakeyBlock.COLOR);
                 return color.getColorHex();
             }
