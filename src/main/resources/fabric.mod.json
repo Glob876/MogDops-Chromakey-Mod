@@ -13,7 +13,7 @@
 		"sources": "https://github.com/Glob876/MogDops-Chromakey-Mod",
 		"issues": "https://github.com/Glob876/MogDops-Chromakey-Mod/issues"
 	},
-	"license": "MIT",
+	"license": "CC0-1.0",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -31,7 +31,7 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.19.3",
+		"fabricloader": ">=0.18.4",
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"

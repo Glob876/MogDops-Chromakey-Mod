@@ -29,11 +29,11 @@ public class ChromakeyControllerItem extends Item {
 
                 // Проверяем, зажат ли у игрока SHIFT (Sneaking)
                 if (player != null && player.isSneaking()) {
-                    // Переключаем только между Red, Green, White
+                    // Переключаем ТОЛЬКО основные цвета хромакея в порядке: GREEN -> BLUE -> RED -> GREEN
                     nextColor = switch (currentColor) {
-                        case RED -> ChromakeyColor.GREEN;
-                        case GREEN -> ChromakeyColor.WHITE;
-                        default -> ChromakeyColor.RED; // Сбрасывает любые другие цвета на RED
+                        case GREEN -> ChromakeyColor.BLUE;
+                        case BLUE -> ChromakeyColor.RED;
+                        default -> ChromakeyColor.GREEN; // Сбрасывает любые другие декоративные цвета на GREEN
                     };
                 } else {
                     // Обычное нажатие ПКМ: перебираем все доступные цвета по полному кругу
