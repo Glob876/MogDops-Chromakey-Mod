@@ -1,20 +1,20 @@
 package me.mogdop;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,109 +23,108 @@ public class ChromakeyMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     // Ключ и регистрация Блока Хромакея
-    public static final RegistryKey<Block> GREEN_CHROMAKEY_BLOCK_KEY = RegistryKey.of(
-        RegistryKeys.BLOCK,
-        Identifier.of(MOD_ID, "green_chromakey_block")
+    public static final ResourceKey<Block> GREEN_CHROMAKEY_BLOCK_KEY = ResourceKey.create(
+        Registries.BLOCK,
+        Identifier.fromNamespaceAndPath(MOD_ID, "green_chromakey_block")
     );
 
     public static final Block GREEN_CHROMAKEY_BLOCK = Registry.register(
-        Registries.BLOCK,
+        BuiltInRegistries.BLOCK,
         GREEN_CHROMAKEY_BLOCK_KEY,
-        new ChromakeyBlock(AbstractBlock.Settings.create()
-            .registryKey(GREEN_CHROMAKEY_BLOCK_KEY)
-            .strength(1.5f)
-            .sounds(BlockSoundGroup.STONE)
-            .luminance(state -> state.get(ChromakeyBlock.LIT) ? 15 : 0) // Свечение всей соединенной структуры
+        new ChromakeyBlock(BlockBehaviour.Properties.of()
+            .setId(GREEN_CHROMAKEY_BLOCK_KEY)
+            .destroyTime(1.5f)
+            .sound(SoundType.STONE)
+            .lightLevel(state -> state.getValue(ChromakeyBlock.LIT) ? 15 : 0)
         )
     );
 
     // Ключ и регистрация Предмета блока
-    public static final RegistryKey<Item> GREEN_CHROMAKEY_BLOCK_ITEM_KEY = RegistryKey.of(
-        RegistryKeys.ITEM,
-        Identifier.of(MOD_ID, "green_chromakey_block")
+    public static final ResourceKey<Item> GREEN_CHROMAKEY_BLOCK_ITEM_KEY = ResourceKey.create(
+        Registries.ITEM,
+        Identifier.fromNamespaceAndPath(MOD_ID, "green_chromakey_block")
     );
 
     public static final Item GREEN_CHROMAKEY_BLOCK_ITEM = Registry.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         GREEN_CHROMAKEY_BLOCK_ITEM_KEY,
         new BlockItem(
             GREEN_CHROMAKEY_BLOCK,
-            new Item.Settings()
-                .registryKey(GREEN_CHROMAKEY_BLOCK_ITEM_KEY)
-                .useBlockPrefixedTranslationKey()
+            new Item.Properties()
+                .setId(GREEN_CHROMAKEY_BLOCK_ITEM_KEY)
+                .useBlockDescriptionPrefix() // Заменяет useBlockPrefixedTranslationKey
         )
     );
 
     // Ключ и регистрация Предмета Контроллера
-    public static final RegistryKey<Item> CHROMAKEY_CONTROLLER_KEY = RegistryKey.of(
-        RegistryKeys.ITEM,
-        Identifier.of(MOD_ID, "chromakey_controller")
+    public static final ResourceKey<Item> CHROMAKEY_CONTROLLER_KEY = ResourceKey.create(
+        Registries.ITEM,
+        Identifier.fromNamespaceAndPath(MOD_ID, "chromakey_controller")
     );
 
     public static final Item CHROMAKEY_CONTROLLER = Registry.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         CHROMAKEY_CONTROLLER_KEY,
         new ChromakeyControllerItem(
-            new Item.Settings()
-                .registryKey(CHROMAKEY_CONTROLLER_KEY)
-                .maxCount(1) // Не стакается
+            new Item.Properties()
+                .setId(CHROMAKEY_CONTROLLER_KEY)
+                .stacksTo(1)
         )
     );
 
     // Ключи и регистрация Процессора и Заготовки
-    public static final RegistryKey<Item> CHROMAKEY_PROCESSOR_KEY = RegistryKey.of(
-        RegistryKeys.ITEM,
-        Identifier.of(MOD_ID, "chromakey_processor")
+    public static final ResourceKey<Item> CHROMAKEY_PROCESSOR_KEY = ResourceKey.create(
+        Registries.ITEM,
+        Identifier.fromNamespaceAndPath(MOD_ID, "chromakey_processor")
     );
 
     public static final Item CHROMAKEY_PROCESSOR = Registry.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         CHROMAKEY_PROCESSOR_KEY,
         new Item(
-            new Item.Settings()
-                .registryKey(CHROMAKEY_PROCESSOR_KEY)
+            new Item.Properties()
+                .setId(CHROMAKEY_PROCESSOR_KEY)
         )
     );
 
-    public static final RegistryKey<Item> CHROMAKEY_BLANK_KEY = RegistryKey.of(
-        RegistryKeys.ITEM,
-        Identifier.of(MOD_ID, "chromakey_blank")
+    public static final ResourceKey<Item> CHROMAKEY_BLANK_KEY = ResourceKey.create(
+        Registries.ITEM,
+        Identifier.fromNamespaceAndPath(MOD_ID, "chromakey_blank")
     );
 
     public static final Item CHROMAKEY_BLANK = Registry.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         CHROMAKEY_BLANK_KEY,
         new Item(
-            new Item.Settings()
-                .registryKey(CHROMAKEY_BLANK_KEY)
+            new Item.Properties()
+                .setId(CHROMAKEY_BLANK_KEY)
         )
     );
 
     // Вкладка творческого режима
-    public static final RegistryKey<ItemGroup> CHROMAKEY_ITEM_GROUP_KEY = RegistryKey.of(
-        RegistryKeys.ITEM_GROUP,
-        Identifier.of(MOD_ID, "chromakey_item_group")
+    public static final ResourceKey<CreativeModeTab> CHROMAKEY_ITEM_GROUP_KEY = ResourceKey.create(
+        Registries.CREATIVE_MODE_TAB,
+        Identifier.fromNamespaceAndPath(MOD_ID, "chromakey_item_group")
     );
 
-    public static final ItemGroup CHROMAKEY_ITEM_GROUP = Registry.register(
-        Registries.ITEM_GROUP,
+    public static final CreativeModeTab CHROMAKEY_ITEM_GROUP = Registry.register(
+        BuiltInRegistries.CREATIVE_MODE_TAB,
         CHROMAKEY_ITEM_GROUP_KEY,
-        FabricItemGroup.builder()
+        FabricCreativeModeTab.builder()
             .icon(() -> new ItemStack(GREEN_CHROMAKEY_BLOCK_ITEM))
-            .displayName(Text.translatable("itemGroup.mogdops-chromakey-mod.chromakey_item_group"))
-            .entries((context, entries) -> {
-                entries.add(GREEN_CHROMAKEY_BLOCK_ITEM);
-                entries.add(CHROMAKEY_CONTROLLER);
-                entries.add(CHROMAKEY_PROCESSOR);
-                entries.add(CHROMAKEY_BLANK);
+            .title(Component.translatable("itemGroup.mogdops-chromakey-mod.chromakey_item_group"))
+            .displayItems((context, entries) -> {
+                entries.accept(GREEN_CHROMAKEY_BLOCK_ITEM);
+                entries.accept(CHROMAKEY_CONTROLLER);
+                entries.accept(CHROMAKEY_PROCESSOR);
+                entries.accept(CHROMAKEY_BLANK);
             })
             .build()
     );
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Инициализация MogDops Chromakey Mod...");
-        // Загружаем наш файл конфигурации
+        LOGGER.info("Initializing MogDops Chromakey Mod for Minecraft 26.2...");
         ChromakeyConfig.load();
     }
 }

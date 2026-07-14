@@ -1,17 +1,7 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url 'https://maven.fabricmc.net/'
-        }
-    }
-    dependencies {
-        classpath "net.fabricmc:fabric-loom:${loom_version}"
-    }
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
+    id 'maven-publish'
 }
-
-apply plugin: 'fabric-loom'
-apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
@@ -23,22 +13,25 @@ repositories {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs 'src/main/java', 'src/client/java'
-        }
-        resources {
-            srcDirs 'src/main/resources', 'src/client/resources'
+// Нативное разделение окружений в Fabric Loom 1.17+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        "mogdops-chromakey-mod" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
         }
     }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings() // Автоматически загружает официальные Mojang маппинги
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    
+    // В Minecraft 26.1+ зависимость mappings() намеренно удалена, 
+    // так как игра поставляется уже деобфусцированной.
+    
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {

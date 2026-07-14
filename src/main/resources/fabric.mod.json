@@ -23,17 +23,10 @@
 			"me.mogdop.client.ChromakeyModClient"
 		]
 	},
-	"mixins": [
-		"chromakey.mixins.json",
-		{
-			"config": "chromakey.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.11",
-		"java": ">=21",
+		"minecraft": "~26.2",
+		"java": ">=25",
 		"fabric-api": "*"
 	}
 }

@@ -47,11 +47,11 @@ public class ChromakeyControllerItem extends Item {
                 world.setBlock(pos, newState, 3);
                 chromakeyBlock.propagateState(world, pos, newState); // Перекрашиваем всю стену!
 
-                // Отправляем сообщение в Actionbar только если в конфиге включен параметр showColorChangeMessage
+                // Отправляем сообщение только если в конфиге включен параметр showColorChangeMessage
                 if (player != null && ChromakeyConfig.showColorChangeMessage) {
-                    player.displayClientMessage(Component.translatable("message.mogdops-chromakey-mod.color_changed", 
-                        Component.translatable("color.mogdops-chromakey-mod." + nextColor.asString())
-                    ).withStyle(ChatFormatting.GREEN), true);
+                    player.sendSystemMessage(Component.translatable("message.mogdops-chromakey-mod.color_changed", 
+                        Component.translatable("color.mogdops-chromakey-mod." + nextColor.getSerializedName())
+                    ).withStyle(ChatFormatting.GREEN));
                 }
             }
             return InteractionResult.SUCCESS;
