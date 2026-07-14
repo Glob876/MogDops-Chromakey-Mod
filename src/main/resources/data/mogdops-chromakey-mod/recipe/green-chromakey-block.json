@@ -2,18 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "G": {
-      "item": "minecraft:lime_dye"
-    },
-    "B": {
-      "item": "mogdops-chromakey-mod:chromakey_blank"
-    },
-    "L": {
-      "item": "minecraft:glowstone_dust"
-    }
+    "P": "mogdops-chromakey-mod:chromakey_processor",
+    "G": "minecraft:lime_dye",
+    "B": "mogdops-chromakey-mod:chromakey_blank",
+    "L": "minecraft:glowstone_dust"
   },
   "pattern": [
-    "GGG",
+    "GPG",
     "GBG",
     "GLG"
   ],

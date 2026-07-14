@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "P": {
-      "item": "mogdops-chromakey-mod:chromakey_processor"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    }
+    "A": "minecraft:amethyst_shard",
+    "P": "mogdops-chromakey-mod:chromakey_processor",
+    "I": "minecraft:iron_ingot"
   },
   "pattern": [
     "A",

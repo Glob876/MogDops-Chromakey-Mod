@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "W": {
-      "item": "minecraft:white_wool"
-    },
-    "S": {
-      "item": "minecraft:smooth_stone"
-    }
+    "W": "minecraft:white_wool",
+    "S": "minecraft:smooth_stone"
   },
   "pattern": [
     "WWW",
