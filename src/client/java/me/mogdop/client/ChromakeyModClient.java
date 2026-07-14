@@ -14,11 +14,11 @@ public class ChromakeyModClient implements ClientModInitializer {
             if (tintIndex == 0) {
                 // Если блок выключен (LIT = false), возвращаем -1, чтобы
                 // частицы разрушения и сам блок оставались нейтрального серого цвета (chromakey_off)
-                if (state != null && state.contains(ChromakeyBlock.LIT) && !state.get(ChromakeyBlock.LIT)) {
+                if (state != null && state.hasProperty(ChromakeyBlock.LIT) && !state.getValue(ChromakeyBlock.LIT)) {
                     return -1;
                 }
                 
-                ChromakeyColor color = state.get(ChromakeyBlock.COLOR);
+                ChromakeyColor color = state.getValue(ChromakeyBlock.COLOR);
                 return color.getColorHex();
             }
             return -1; // Без окрашивания

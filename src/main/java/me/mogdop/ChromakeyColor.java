@@ -1,16 +1,16 @@
 package me.mogdop;
 
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.StringRepresentable;
 
-public enum ChromakeyColor implements StringIdentifiable {
-    GREEN("green", 0xFF00FF33),     // Зеленый хромакей
-    BLUE("blue", 0xFF0022FF),       // Синий хромакей
-    RED("red", 0xFFFF0000),         // Красный хромакей
-    YELLOW("yellow", 0xFFFFFF00),   // Желтый
-    CYAN("cyan", 0xFF00FFFF),       // Бирюзовый / Голубой
-    MAGENTA("magenta", 0xFFFF00FF), // Пурпурный / Розовый
-    WHITE("white", 0xFFFFFFFF),     // Белый
-    BLACK("black", 0xFF111111);     // Темно-серый / Черный (0x111111, чтобы сохранялся рельеф)
+public enum ChromakeyColor implements StringRepresentable {
+    GREEN("green", 0xFF00FF33),
+    BLUE("blue", 0xFF0022FF),
+    RED("red", 0xFFFF0000),
+    YELLOW("yellow", 0xFFFFFF00),
+    CYAN("cyan", 0xFF00FFFF),
+    MAGENTA("magenta", 0xFFFF00FF),
+    WHITE("white", 0xFFFFFFFF),
+    BLACK("black", 0xFF111111);
 
     private final String name;
     private final int colorHex;
@@ -21,7 +21,7 @@ public enum ChromakeyColor implements StringIdentifiable {
     }
 
     @Override
-    public String asString() {
+    public String getSerializedName() {
         return this.name;
     }
 

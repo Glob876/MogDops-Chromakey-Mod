@@ -11,7 +11,6 @@ import java.util.Properties;
 public class ChromakeyConfig {
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("mogdops-chromakey-mod.properties");
     
-    // Параметр конфига. По умолчанию равен false (сообщения не показываются)
     public static boolean showColorChangeMessage = false;
 
     public static void load() {
@@ -24,7 +23,7 @@ public class ChromakeyConfig {
                 ChromakeyMod.LOGGER.error("Failed to load config", e);
             }
         } else {
-            save(); // Если файла нет, создаем его со значениями по умолчанию
+            save();
         }
     }
 
