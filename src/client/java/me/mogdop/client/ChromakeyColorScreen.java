@@ -17,11 +17,6 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
     private int selectedColor = 0xFF00FF33; // Цвет по умолчанию (Зеленый)
 
     @Override
-    protected @NotNull Class<FlowLayout> rootLayoutType() {
-        return FlowLayout.class;
-    }
-
-    @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
         return OwoUIAdapter.create(this, Containers::verticalFlow);
     }
@@ -52,20 +47,20 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
         hexInput.setText("#00FF33");
         hexInput.setMaxLength(7);
 
-        // 1. При перетаскивании ползунка на палитре обновляем текст в поле ввода
-        colorPicker.color().subscribe(color -> {
+        // 1. При перетаскивании ползунка на палитре обновляем текст в поле ввода через метод onChanged()
+        colorPicker.onChanged().subscribe(color -> {
             selectedColor = color.rgb();
             String hex = String.format("#%06X", (0xFFFFFF & selectedColor));
             hexInput.setText(hex);
         });
 
-        // 2. При вводе валидного HEX-кода в поле автоматически перестраиваем палитру
+        // 2. При вводе валидного HEX-кода в поле автоматически перестраиваем палитру через сеттер selectedColor()
         hexInput.onChanged().subscribe(text -> {
             if (text.matches("^#[0-9A-Fa-f]{6}$")) {
                 try {
                     int parsedColor = Integer.parseInt(text.substring(1), 16);
                     selectedColor = parsedColor;
-                    colorPicker.color(Color.ofRgb(parsedColor));
+                    colorPicker.selectedColor(Color.ofRgb(parsedColor));
                 } catch (NumberFormatException ignored) {}
             }
         });

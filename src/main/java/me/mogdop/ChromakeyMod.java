@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
@@ -46,11 +47,11 @@ public class ChromakeyMod implements ModInitializer {
         )
     );
 
-    // Регистрация Block Entity
+    // Регистрация Block Entity через FabricBlockEntityTypeBuilder
     public static final BlockEntityType<ChromakeyBlockEntity> CHROMAKEY_BLOCK_ENTITY = Registry.register(
         Registries.BLOCK_ENTITY_TYPE,
         Identifier.of(MOD_ID, "chromakey_block_entity"),
-        BlockEntityType.Builder.create(ChromakeyBlockEntity::new, GREEN_CHROMAKEY_BLOCK).build(null)
+        FabricBlockEntityTypeBuilder.create(ChromakeyBlockEntity::new, GREEN_CHROMAKEY_BLOCK).build()
     );
 
     // Ключ и регистрация Предмета блока
@@ -98,7 +99,6 @@ public class ChromakeyMod implements ModInitializer {
         new Item(new Item.Settings().registryKey(CHROMAKEY_PROCESSOR_KEY))
     );
 
-    // Заготовка
     public static final RegistryKey<Item> CHROMAKEY_BLANK_KEY = RegistryKey.of(
         RegistryKeys.ITEM,
         Identifier.of(MOD_ID, "chromakey_blank")
@@ -140,7 +140,7 @@ public class ChromakeyMod implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(OpenColorScreenPayload.ID, OpenColorScreenPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ApplyColorPayload.ID, ApplyColorPayload.CODEC);
 
-        // Обработка пакета применения цвета на сервере (запись в NBT предмета через NbtComponent)
+        // Обработка пакета применения цвета на сервере (запись в NBT предмета)
         ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ItemStack stack = context.player().getMainHandStack();

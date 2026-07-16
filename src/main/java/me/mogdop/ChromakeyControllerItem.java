@@ -31,7 +31,7 @@ public class ChromakeyControllerItem extends Item {
                 int mode = 0; // 0 = Стандартный, 1 = Кастомный цвет
                 NbtComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);
                 NbtCompound nbt = customData != null ? customData.copyNbt() : new NbtCompound();
-                mode = nbt.getInt("mode");
+                mode = nbt.getInt("mode").orElse(0);
 
                 // Переключаем режим по кругу
                 mode = mode == 0 ? 1 : 0;
@@ -67,8 +67,8 @@ public class ChromakeyControllerItem extends Item {
                 NbtComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);
                 if (customData != null) {
                     NbtCompound nbt = customData.copyNbt();
-                    mode = nbt.getInt("mode");
-                    customColor = nbt.contains("custom_color") ? nbt.getInt("custom_color") : -1;
+                    mode = nbt.getInt("mode").orElse(0);
+                    customColor = nbt.getInt("custom_color").orElse(-1);
                 }
 
                 if (mode == 1) {

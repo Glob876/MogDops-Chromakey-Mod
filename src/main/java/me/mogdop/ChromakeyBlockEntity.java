@@ -7,6 +7,8 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 
 public class ChromakeyBlockEntity extends BlockEntity {
@@ -29,15 +31,15 @@ public class ChromakeyBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        nbt.putInt("custom_color", this.customColor);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putInt("custom_color", this.customColor);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.customColor = nbt.getInt("custom_color");
+    protected void readData(ReadView view) {
+        super.readData(view);
+        this.customColor = view.getInt("custom_color").orElse(-1);
     }
 
     @Override
@@ -47,8 +49,6 @@ public class ChromakeyBlockEntity extends BlockEntity {
 
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound nbt = new NbtCompound();
-        writeNbt(nbt, registryLookup);
-        return nbt;
+        return createNbt(registryLookup);
     }
 }
