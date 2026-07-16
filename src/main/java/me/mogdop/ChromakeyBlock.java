@@ -38,26 +38,15 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        // Если в любой из рук контроллер, передаем управление ему
         if (player.getMainHandStack().getItem() instanceof ChromakeyControllerItem ||
             player.getOffHandStack().getItem() instanceof ChromakeyControllerItem) {
             return ActionResult.PASS;
         }
 
-        // Включаем/выключаем только если игрок сидит (Shift)
         if (player.isSneaking()) {
             if (!world.isClient()) {
-                BlockState newState = state.cycle(LIT);
-                world.setBlockState(pos, newState);
-                
-                // Считываем текущий кастомный цвет блока перед распространением
-                int currentCustomColor = -1;
-                BlockEntity be = world.getBlockEntity(pos);
-                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                    currentCustomColor = chromakeyBe.getCustomColor();
-                }
-
-                propagateState(world, pos, newState, currentCustomColor); // Распространяем сигнал на соседние блоки
+                boolean newLit = !state.get(LIT);
+                propagateState(world, pos, newLit, null);
             }
             return ActionResult.SUCCESS;
         }
@@ -67,9 +56,7 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
 
     @Override
     protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        if (player.isSneaking()) {
-            return 1.0f;
-        }
+        if (player.isSneaking()) { return 1.0f; }
         return super.calcBlockBreakingDelta(state, player, world, pos);
     }
 
@@ -78,8 +65,7 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
         builder.add(LIT, COLOR);
     }
 
-    // Алгоритм Flood Fill с поддержкой одновременного перекрашивания/обновления Block Entity
-    public void propagateState(World world, BlockPos startPos, BlockState targetState, int customColor) {
+    public void propagateState(World world, BlockPos startPos, @Nullable Boolean targetLit, @Nullable Integer targetColor) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
         queue.add(startPos);
@@ -90,26 +76,17 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
             BlockState currentState = world.getBlockState(current);
 
             if (currentState.getBlock() == this) {
-                boolean needsUpdate = currentState.get(LIT) != targetState.get(LIT) ||
-                                      currentState.get(COLOR) != targetState.get(COLOR);
-
-                // Синхронизируем кастомный цвет в Block Entity
-                BlockEntity be = world.getBlockEntity(current);
-                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                    if (chromakeyBe.getCustomColor() != customColor) {
-                        chromakeyBe.setCustomColor(customColor);
-                        needsUpdate = true;
+                if (targetColor != null) {
+                    BlockEntity be = world.getBlockEntity(current);
+                    if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                        chromakeyBe.setCustomColor(targetColor);
                     }
                 }
 
-                if (needsUpdate) {
-                    world.setBlockState(current, currentState
-                        .with(LIT, targetState.get(LIT))
-                        .with(COLOR, targetState.get(COLOR))
-                    );
+                if (targetLit != null && currentState.get(LIT) != targetLit) {
+                    world.setBlockState(current, currentState.with(LIT, targetLit));
                 }
 
-                // Проверяем все 6 направлений вокруг блока
                 for (Direction dir : Direction.values()) {
                     BlockPos neighbor = current.offset(dir);
                     if (!visited.contains(neighbor) && world.getBlockState(neighbor).getBlock() == this) {

@@ -12,7 +12,7 @@ import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 
 public class ChromakeyBlockEntity extends BlockEntity {
-    private int customColor = -1; // -1 означает использование стандартного цвета из Enum
+    private int customColor = -1;
 
     public ChromakeyBlockEntity(BlockPos pos, BlockState state) {
         super(ChromakeyMod.CHROMAKEY_BLOCK_ENTITY, pos, state);
@@ -38,9 +38,14 @@ public class ChromakeyBlockEntity extends BlockEntity {
 
     @Override
     protected void readData(ReadView view) {
+        int oldColor = this.customColor;
         super.readData(view);
-        // Передаем дефолтное значение (-1) вторым аргументом
         this.customColor = view.getInt("custom_color", -1);
+        
+        // Исправление мгновенного применения: Форсируем перерисовку чанка при изменении цвета
+        if (this.world != null && this.world.isClient() && this.customColor != oldColor) {
+            this.world.updateListeners(this.pos, this.getCachedState(), this.getCachedState(), 3);
+        }
     }
 
     @Override
