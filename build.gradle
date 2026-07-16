@@ -21,6 +21,10 @@ repositories {
     maven {
         url 'https://maven.fabricmc.net/'
     }
+    // Репозиторий библиотеки owo-lib
+    maven {
+        url 'https://maven.wispforest.io/releases/'
+    }
 }
 
 sourceSets {
@@ -39,6 +43,10 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Зависимости owo-lib
+    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+    annotationProcessor "io.wispforest:owo-lib:${project.owo_version}"
 }
 
 processResources {
@@ -74,7 +82,7 @@ jar {
 	}
 }
 
-// Глобально отключаем конфликты дубликатов для ВСЕХ задач копирования и сборки JAR (включая sourcesJar)
+// Глобальное отключение конфликтов дубликатов ресурсов
 tasks.withType(AbstractCopyTask).configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -6,7 +6,7 @@
 	"icon": "assets/mogdops-chromakey-mod/icon.png",
 	"description": "A Mod for functional chromakey effects!",
 	"authors": [
-		"MogDop"
+		"MogDop/Glob876"
 	],
 	"contact": {
 		"homepage": "https://github.com/Glob876/MogDops-Chromakey-Mod",
@@ -23,17 +23,11 @@
 			"me.mogdop.client.ChromakeyModClient"
 		]
 	},
-	"mixins": [
-		"chromakey.mixins.json",
-		{
-			"config": "chromakey.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.18.4",
 		"minecraft": "~1.21.11",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"owo": ">=0.12.14"
 	}
 }
