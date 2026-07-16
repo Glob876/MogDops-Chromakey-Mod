@@ -39,7 +39,8 @@ public class ChromakeyBlockEntity extends BlockEntity {
     @Override
     protected void readData(ReadView view) {
         super.readData(view);
-        this.customColor = view.getInt("custom_color").orElse(-1);
+        // Передаем дефолтное значение (-1) вторым аргументом
+        this.customColor = view.getInt("custom_color", -1);
     }
 
     @Override
