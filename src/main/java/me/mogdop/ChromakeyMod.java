@@ -8,7 +8,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomDataComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -139,15 +139,15 @@ public class ChromakeyMod implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(OpenColorScreenPayload.ID, OpenColorScreenPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ApplyColorPayload.ID, ApplyColorPayload.CODEC);
 
-        // Обработка пакета применения цвета на сервере (запись в NBT предмета)
+        // Обработка пакета применения цвета на сервере (запись в NBT предмета через NbtComponent)
         ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ItemStack stack = context.player().getMainHandStack();
                 if (stack.getItem() instanceof ChromakeyControllerItem) {
-                    CustomDataComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);
+                    NbtComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);
                     NbtCompound nbt = customData != null ? customData.copyNbt() : new NbtCompound();
                     nbt.putInt("custom_color", payload.rgb());
-                    stack.set(DataComponentTypes.CUSTOM_DATA, CustomDataComponent.of(nbt));
+                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
                     context.player().sendMessage(Text.literal("Saved color: " + String.format("#%06X", payload.rgb())).formatted(Formatting.GREEN), true);
                 }
             });
