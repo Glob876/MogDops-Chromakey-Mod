@@ -25,6 +25,10 @@ repositories {
     maven {
         url 'https://maven.wispforest.io/releases/'
     }
+    // Репозиторий для kdl4j и других GitHub-зависимостей
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 sourceSets {
@@ -97,3 +101,17 @@ publishing {
 	repositories {
 	}
 }
+
+pluginManagement {
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+// Should match your modid
+rootProject.name = 'mdchromakey'
