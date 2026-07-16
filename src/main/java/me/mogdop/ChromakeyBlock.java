@@ -1,7 +1,9 @@
 package me.mogdop;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -13,19 +15,25 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-public class ChromakeyBlock extends Block {
+public class ChromakeyBlock extends Block implements BlockEntityProvider {
     public static final BooleanProperty LIT = Properties.LIT;
     public static final EnumProperty<ChromakeyColor> COLOR = EnumProperty.of("color", ChromakeyColor.class);
 
     public ChromakeyBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getDefaultState().with(LIT, false).with(COLOR, ChromakeyColor.GREEN));
+    }
+
+    @Override
+    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ChromakeyBlockEntity(pos, state);
     }
 
     @Override
@@ -41,7 +49,15 @@ public class ChromakeyBlock extends Block {
             if (!world.isClient()) {
                 BlockState newState = state.cycle(LIT);
                 world.setBlockState(pos, newState);
-                propagateState(world, pos, newState); // Распространяем сигнал на соседние блоки
+                
+                // Считываем текущий кастомный цвет блока перед распространением
+                int currentCustomColor = -1;
+                BlockEntity be = world.getBlockEntity(pos);
+                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                    currentCustomColor = chromakeyBe.getCustomColor();
+                }
+
+                propagateState(world, pos, newState, currentCustomColor); // Распространяем сигнал на соседние блоки
             }
             return ActionResult.SUCCESS;
         }
@@ -51,7 +67,6 @@ public class ChromakeyBlock extends Block {
 
     @Override
     protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        // Если игрок зажал Shift, блок ломается мгновенно (даже рукой)
         if (player.isSneaking()) {
             return 1.0f;
         }
@@ -63,8 +78,8 @@ public class ChromakeyBlock extends Block {
         builder.add(LIT, COLOR);
     }
 
-    // Алгоритм поиска в ширину (Flood Fill) для одновременного переключения стакающихся блоков
-    public void propagateState(World world, BlockPos startPos, BlockState targetState) {
+    // Алгоритм Flood Fill с поддержкой одновременного перекрашивания/обновления Block Entity
+    public void propagateState(World world, BlockPos startPos, BlockState targetState, int customColor) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
         queue.add(startPos);
@@ -77,6 +92,15 @@ public class ChromakeyBlock extends Block {
             if (currentState.getBlock() == this) {
                 boolean needsUpdate = currentState.get(LIT) != targetState.get(LIT) ||
                                       currentState.get(COLOR) != targetState.get(COLOR);
+
+                // Синхронизируем кастомный цвет в Block Entity
+                BlockEntity be = world.getBlockEntity(current);
+                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                    if (chromakeyBe.getCustomColor() != customColor) {
+                        chromakeyBe.setCustomColor(customColor);
+                        needsUpdate = true;
+                    }
+                }
 
                 if (needsUpdate) {
                     world.setBlockState(current, currentState

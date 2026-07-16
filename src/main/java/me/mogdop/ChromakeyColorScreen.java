@@ -7,6 +7,8 @@ import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
+import me.mogdop.ApplyColorPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,8 +78,7 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     private void applyColor(int rgb) {
-        // Логика применения выбранного цвета.
-        // Здесь вы сможете передать полученный цвет (rgb) в блок или отправить пакет на сервер.
-        ChromakeyMod.LOGGER.info("Selected color RGB: " + String.format("#%06X", rgb));
+        // Отправляем пакет на сервер для сохранения цвета в предмет
+        ClientPlayNetworking.send(new ApplyColorPayload(rgb));
     }
 }

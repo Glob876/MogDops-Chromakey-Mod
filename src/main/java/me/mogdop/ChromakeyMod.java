@@ -2,18 +2,25 @@ package me.mogdop;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomDataComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +42,15 @@ public class ChromakeyMod implements ModInitializer {
             .registryKey(GREEN_CHROMAKEY_BLOCK_KEY)
             .strength(1.5f)
             .sounds(BlockSoundGroup.STONE)
-            .luminance(state -> state.get(ChromakeyBlock.LIT) ? 15 : 0) // Свечение всей соединенной структуры
+            .luminance(state -> state.get(ChromakeyBlock.LIT) ? 15 : 0)
         )
+    );
+
+    // Регистрация Block Entity
+    public static final BlockEntityType<ChromakeyBlockEntity> CHROMAKEY_BLOCK_ENTITY = Registry.register(
+        Registries.BLOCK_ENTITY_TYPE,
+        Identifier.of(MOD_ID, "chromakey_block_entity"),
+        BlockEntityType.Builder.create(ChromakeyBlockEntity::new, GREEN_CHROMAKEY_BLOCK).build(null)
     );
 
     // Ключ и регистрация Предмета блока
@@ -68,11 +82,11 @@ public class ChromakeyMod implements ModInitializer {
         new ChromakeyControllerItem(
             new Item.Settings()
                 .registryKey(CHROMAKEY_CONTROLLER_KEY)
-                .maxCount(1) // Не стакается
+                .maxCount(1)
         )
     );
 
-    // Ключи и регистрация Процессора и Заготовки
+    // Процессор и заготовка
     public static final RegistryKey<Item> CHROMAKEY_PROCESSOR_KEY = RegistryKey.of(
         RegistryKeys.ITEM,
         Identifier.of(MOD_ID, "chromakey_processor")
@@ -81,10 +95,7 @@ public class ChromakeyMod implements ModInitializer {
     public static final Item CHROMAKEY_PROCESSOR = Registry.register(
         Registries.ITEM,
         CHROMAKEY_PROCESSOR_KEY,
-        new Item(
-            new Item.Settings()
-                .registryKey(CHROMAKEY_PROCESSOR_KEY)
-        )
+        new Item(new Item.Settings().registryKey(CHROMAKEY_PROCESSOR_KEY))
     );
 
     public static final RegistryKey<Item> CHROMAKEY_BLANK_KEY = RegistryKey.of(
@@ -95,10 +106,7 @@ public class ChromakeyMod implements ModInitializer {
     public static final Item CHROMAKEY_BLANK = Registry.register(
         Registries.ITEM,
         CHROMAKEY_BLANK_KEY,
-        new Item(
-            new Item.Settings()
-                .registryKey(CHROMAKEY_BLANK_KEY)
-        )
+        new Item(new Item.Settings().registryKey(CHROMAKEY_BLANK_KEY))
     );
 
     // Вкладка творческого режима
@@ -125,7 +133,24 @@ public class ChromakeyMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Инициализация MogDops Chromakey Mod...");
-        // Загружаем наш файл конфигурации
         ChromakeyConfig.load();
+
+        // Регистрация сетевых кодеков
+        PayloadTypeRegistry.playS2C().register(OpenColorScreenPayload.ID, OpenColorScreenPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ApplyColorPayload.ID, ApplyColorPayload.CODEC);
+
+        // Обработка пакета применения цвета на сервере (запись в NBT предмета)
+        ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
+            context.server().execute(() -> {
+                ItemStack stack = context.player().getMainHandStack();
+                if (stack.getItem() instanceof ChromakeyControllerItem) {
+                    CustomDataComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);
+                    NbtCompound nbt = customData != null ? customData.copyNbt() : new NbtCompound();
+                    nbt.putInt("custom_color", payload.rgb());
+                    stack.set(DataComponentTypes.CUSTOM_DATA, CustomDataComponent.of(nbt));
+                    context.player().sendMessage(Text.literal("Saved color: " + String.format("#%06X", payload.rgb())).formatted(Formatting.GREEN), true);
+                }
+            });
+        });
     }
 }
