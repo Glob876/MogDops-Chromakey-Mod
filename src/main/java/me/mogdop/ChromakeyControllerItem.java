@@ -22,7 +22,7 @@ public class ChromakeyControllerItem extends Item {
         super(settings);
     }
 
-    // Shift + ПКМ по воздуху переключает режим контроллера
+    // Shift + ПКМ по любому ПУСТОМУ месту (воздуху) переключает режим контроллера
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
@@ -61,7 +61,7 @@ public class ChromakeyControllerItem extends Item {
 
         if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
             if (!world.isClient()) {
-                // Считываем текущий режим и сохраненный цвет из NBT предмета через NbtComponent
+                // Считываем текущий режим и сохраненный цвет из NBT предмета
                 int mode = 0;
                 int customColor = -1;
                 NbtComponent customData = stack.get(DataComponentTypes.CUSTOM_DATA);

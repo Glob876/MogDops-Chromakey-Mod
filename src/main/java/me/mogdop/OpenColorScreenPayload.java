@@ -7,10 +7,7 @@ import net.minecraft.util.Identifier;
 
 public record OpenColorScreenPayload() implements CustomPayload {
     public static final Id<OpenColorScreenPayload> ID = new Id<>(Identifier.of(ChromakeyMod.MOD_ID, "open_color_screen"));
-    public static final PacketCodec<RegistryByteBuf, OpenColorScreenPayload> CODEC = PacketCodec.ofStatic(
-        (buf) -> {},
-        (payload, buf) -> {}
-    );
+    public static final PacketCodec<RegistryByteBuf, OpenColorScreenPayload> CODEC = PacketCodec.unit(new OpenColorScreenPayload());
 
     @Override
     public Id<? extends CustomPayload> getId() {

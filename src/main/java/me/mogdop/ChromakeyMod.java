@@ -98,6 +98,7 @@ public class ChromakeyMod implements ModInitializer {
         new Item(new Item.Settings().registryKey(CHROMAKEY_PROCESSOR_KEY))
     );
 
+    // Заготовка
     public static final RegistryKey<Item> CHROMAKEY_BLANK_KEY = RegistryKey.of(
         RegistryKeys.ITEM,
         Identifier.of(MOD_ID, "chromakey_blank")

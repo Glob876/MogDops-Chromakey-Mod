@@ -22,6 +22,11 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     @Override
+    protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
+        return OwoUIAdapter.create(this, Containers::verticalFlow);
+    }
+
+    @Override
     protected void build(FlowLayout rootComponent) {
         rootComponent
             .surface(Surface.VANILLA_TRANSLUCENT)
@@ -31,7 +36,7 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
         // Основной вертикальный контейнер для элементов интерфейса
         FlowLayout container = Containers.verticalFlow(Sizing.content(), Sizing.content());
         container.surface(Surface.DARK_PANEL)
-            .padding(Insets.all(12))
+            .padding(Insets.of(12))
             .horizontalAlignment(HorizontalAlignment.CENTER);
 
         // Заголовок окна
@@ -48,7 +53,7 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
         hexInput.setMaxLength(7);
 
         // 1. При перетаскивании ползунка на палитре обновляем текст в поле ввода
-        colorPicker.onColorSelected().subscribe(color -> {
+        colorPicker.color().subscribe(color -> {
             selectedColor = color.rgb();
             String hex = String.format("#%06X", (0xFFFFFF & selectedColor));
             hexInput.setText(hex);
@@ -60,7 +65,7 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
                 try {
                     int parsedColor = Integer.parseInt(text.substring(1), 16);
                     selectedColor = parsedColor;
-                    colorPicker.selectedColor(Color.ofRgb(parsedColor));
+                    colorPicker.color(Color.ofRgb(parsedColor));
                 } catch (NumberFormatException ignored) {}
             }
         });
