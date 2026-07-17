@@ -21,8 +21,7 @@ public class ChromakeyControllerItem extends Item {
         BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() instanceof ChromakeyBlock) {
-            if (!world.isClient() && context.getPlayer() instanceof ServerPlayerEntity serverPlayer) {
-                // Отправляем пакет клиенту для открытия меню и передаем позицию блока
+            if (!world.isClient && context.getPlayer() instanceof ServerPlayerEntity serverPlayer) { // Откат: метод isClient() -> поле isClient
                 ServerPlayNetworking.send(serverPlayer, new OpenColorScreenPayload(pos));
             }
             return ActionResult.SUCCESS;

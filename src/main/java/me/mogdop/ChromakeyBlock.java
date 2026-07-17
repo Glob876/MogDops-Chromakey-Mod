@@ -44,9 +44,8 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
         }
 
         if (player.isSneaking()) {
-            if (!world.isClient()) {
+            if (!world.isClient) { // Откат: метод isClient() -> поле isClient в 1.21.1
                 boolean newLit = !state.get(LIT);
-                // Ищем уже существующий кастомный цвет в структуре перед активацией
                 int existingColor = findExistingCustomColor(world, pos);
                 propagateState(world, pos, newLit, existingColor != -1 ? existingColor : null);
             }
@@ -67,7 +66,6 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
         builder.add(LIT, COLOR);
     }
 
-    // Вспомогательный алгоритм для поиска первого попавшегося кастомного цвета в структуре
     private int findExistingCustomColor(World world, BlockPos startPos) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
@@ -83,7 +81,7 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
                 if (be instanceof ChromakeyBlockEntity chromakeyBe) {
                     int color = chromakeyBe.getCustomColor();
                     if (color != -1) {
-                        return color; // Цвет найден!
+                        return color;
                     }
                 }
 
@@ -96,7 +94,7 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
                 }
             }
         }
-        return -1; // Кастомного цвета в структуре пока нет
+        return -1;
     }
 
     public void propagateState(World world, BlockPos startPos, @Nullable Boolean targetLit, @Nullable Integer targetColor) {

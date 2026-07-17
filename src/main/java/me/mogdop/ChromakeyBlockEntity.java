@@ -7,8 +7,6 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 
 public class ChromakeyBlockEntity extends BlockEntity {
@@ -31,19 +29,19 @@ public class ChromakeyBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeData(WriteView view) {
-        super.writeData(view);
-        view.putInt("custom_color", this.customColor);
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        nbt.putInt("custom_color", this.customColor);
     }
 
     @Override
-    protected void readData(ReadView view) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         int oldColor = this.customColor;
-        super.readData(view);
-        this.customColor = view.getInt("custom_color", -1);
+        super.readNbt(nbt, registryLookup);
+        this.customColor = nbt.contains("custom_color") ? nbt.getInt("custom_color") : -1;
         
         // Исправление мгновенного применения: Форсируем перерисовку чанка при изменении цвета
-        if (this.world != null && this.world.isClient() && this.customColor != oldColor) {
+        if (this.world != null && this.world.isClient && this.customColor != oldColor) {
             this.world.updateListeners(this.pos, this.getCachedState(), this.getCachedState(), 3);
         }
     }
@@ -55,6 +53,8 @@ public class ChromakeyBlockEntity extends BlockEntity {
 
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
+        NbtCompound nbt = new NbtCompound();
+        writeNbt(nbt, registryLookup);
+        return nbt;
     }
 }

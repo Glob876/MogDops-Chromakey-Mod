@@ -71,7 +71,7 @@ public class ChromakeyMod implements ModInitializer {
 
         ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
-                World world = context.player().getEntityWorld(); // Исправлено: Entity#getWorld() -> Entity#getEntityWorld() в 1.21.9+
+                World world = context.player().getWorld(); // Откат: getEntityWorld() -> getWorld() в 1.21.1
                 BlockPos pos = payload.pos();
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
