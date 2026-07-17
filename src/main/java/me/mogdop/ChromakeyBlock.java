@@ -46,7 +46,9 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
         if (player.isSneaking()) {
             if (!world.isClient()) {
                 boolean newLit = !state.get(LIT);
-                propagateState(world, pos, newLit, null);
+                // Ищем уже существующий кастомный цвет в структуре перед активацией
+                int existingColor = findExistingCustomColor(world, pos);
+                propagateState(world, pos, newLit, existingColor != -1 ? existingColor : null);
             }
             return ActionResult.SUCCESS;
         }
@@ -65,6 +67,38 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
         builder.add(LIT, COLOR);
     }
 
+    // Вспомогательный алгоритм для поиска первого попавшегося кастомного цвета в структуре
+    private int findExistingCustomColor(World world, BlockPos startPos) {
+        Set<BlockPos> visited = new HashSet<>();
+        Queue<BlockPos> queue = new LinkedList<>();
+        queue.add(startPos);
+        visited.add(startPos);
+
+        while (!queue.isEmpty()) {
+            BlockPos current = queue.poll();
+            BlockState currentState = world.getBlockState(current);
+
+            if (currentState.getBlock() == this) {
+                BlockEntity be = world.getBlockEntity(current);
+                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                    int color = chromakeyBe.getCustomColor();
+                    if (color != -1) {
+                        return color; // Цвет найден!
+                    }
+                }
+
+                for (Direction dir : Direction.values()) {
+                    BlockPos neighbor = current.offset(dir);
+                    if (!visited.contains(neighbor) && world.getBlockState(neighbor).getBlock() == this) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+        }
+        return -1; // Кастомного цвета в структуре пока нет
+    }
+
     public void propagateState(World world, BlockPos startPos, @Nullable Boolean targetLit, @Nullable Integer targetColor) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
@@ -79,7 +113,9 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
                 if (targetColor != null) {
                     BlockEntity be = world.getBlockEntity(current);
                     if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                        chromakeyBe.setCustomColor(targetColor);
+                        if (chromakeyBe.getCustomColor() != targetColor) {
+                            chromakeyBe.setCustomColor(targetColor);
+                        }
                     }
                 }
 
