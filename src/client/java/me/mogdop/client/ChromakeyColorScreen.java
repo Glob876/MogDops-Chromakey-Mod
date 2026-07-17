@@ -33,40 +33,46 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
 
     @Override
     protected void build(FlowLayout rootComponent) {
-        // Темный полупрозрачный фон на весь экран (фокус на самом окне)
+        // Классический полупрозрачный фон майнкрафта для всего экрана, чтобы окно казалось "парящим"
         rootComponent
-            .surface(Surface.flat(0x99000000))
+            .surface(Surface.VANILLA_TRANSLUCENT)
             .horizontalAlignment(HorizontalAlignment.CENTER)
             .verticalAlignment(VerticalAlignment.CENTER);
 
-        // Главное окно в стиле Sodium (плоский темный дизайн с тонкой рамкой)
+        // Главное окно. 
         FlowLayout window = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
-        window.surface(Surface.flat(0xFF161616).and(Surface.outline(0xFF333333)));
-        window.padding(Insets.of(16));
+        
+        // 0xD0151515 — D0 это ~80% непрозрачности, 151515 — темный серый цвет. 
+        // 0x80555555 — полупрозрачная рамка.
+        window.surface(Surface.flat(0xD0151515).and(Surface.outline(0x80555555)));
+        window.padding(Insets.of(14));
+        // margins(20) гарантирует, что интерфейс НИКОГДА не коснется краев экрана
+        window.margins(Insets.of(20)); 
 
-        // --- ШАПКА ОКНА (Header) ---
+        // --- ШАПКА ОКНА ---
         FlowLayout header = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.content());
         header.child(UIComponents.label(Text.literal("Chromakey Configuration").formatted(Formatting.WHITE, Formatting.BOLD)).shadow(true));
         
-        // Разделительная линия
+        // Разделитель
         FlowLayout separatorTop = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.fixed(1));
-        separatorTop.surface(Surface.flat(0xFF333333)).margins(Insets.vertical(10));
+        separatorTop.surface(Surface.flat(0x80333333)).margins(Insets.vertical(8));
 
-        // --- ОСНОВНОЙ КОНТЕНТ (Две колонки) ---
+        // --- КОНТЕНТ ---
         FlowLayout content = UIContainers.horizontalFlow(Sizing.content(), Sizing.content());
         
         // Левая колонка (Палитра)
         FlowLayout leftPanel = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
         leftPanel.horizontalAlignment(HorizontalAlignment.CENTER);
-        leftPanel.child(UIComponents.label(Text.literal("Custom Color").formatted(Formatting.GRAY)).margins(Insets.bottom(8)));
+        leftPanel.child(UIComponents.label(Text.literal("Custom Color").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
 
+        // Немного уменьшили палитру, чтобы всё было еще компактнее
         ColorPickerComponent colorPicker = new ColorPickerComponent();
-        colorPicker.sizing(Sizing.fixed(140), Sizing.fixed(120));
+        colorPicker.sizing(Sizing.fixed(130), Sizing.fixed(110));
 
-        TextBoxComponent hexInput = UIComponents.textBox(Sizing.fixed(140));
+        TextBoxComponent hexInput = UIComponents.textBox(Sizing.fixed(130));
         hexInput.setText("#00FF33");
         hexInput.setMaxLength(7);
-        hexInput.margins(Insets.top(8));
+        hexInput.margins(Insets.top(6));
 
         colorPicker.onChanged().subscribe(color -> {
             selectedColor = color.rgb();
@@ -90,10 +96,10 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
 
         // Правая колонка (Пресеты)
         FlowLayout rightPanel = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
-        rightPanel.margins(Insets.left(24));
-        rightPanel.child(UIComponents.label(Text.literal("Color Presets").formatted(Formatting.GRAY)).margins(Insets.bottom(8)));
+        rightPanel.margins(Insets.left(20));
+        rightPanel.child(UIComponents.label(Text.literal("Color Presets").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
 
-        // Сетка 4x2 для кнопок
+        // Сетка 4х2 (4 строки, 2 колонки)
         GridLayout presetGrid = UIContainers.grid(Sizing.content(), Sizing.content(), 4, 2);
         ChromakeyColor[] colors = ChromakeyColor.values();
         for (int i = 0; i < colors.length; i++) {
@@ -104,38 +110,33 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
                 hexInput.setText(hex);
                 colorPicker.selectedColor(Color.ofRgb(selectedColor));
             });
-            btn.sizing(Sizing.fixed(70), Sizing.fixed(20)).margins(Insets.of(3));
-            presetGrid.child(btn, i / 2, i % 2); // Строка, Колонка
+            btn.sizing(Sizing.fixed(65), Sizing.fixed(20)).margins(Insets.of(2));
+            presetGrid.child(btn, i / 2, i % 2);
         }
         rightPanel.child(presetGrid);
 
         content.child(leftPanel).child(rightPanel);
 
-        // --- ПОДВАЛ (Footer с кнопками действия) ---
+        // --- ПОДВАЛ ---
         FlowLayout separatorBottom = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.fixed(1));
-        separatorBottom.surface(Surface.flat(0xFF333333)).margins(Insets.vertical(10));
+        separatorBottom.surface(Surface.flat(0x80333333)).margins(Insets.vertical(8));
 
         FlowLayout footer = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.content());
         footer.horizontalAlignment(HorizontalAlignment.RIGHT);
         
         ButtonComponent cancelBtn = UIComponents.button(Text.literal("Cancel"), b -> this.close());
-        cancelBtn.sizing(Sizing.fixed(60), Sizing.fixed(20)).margins(Insets.right(8));
+        cancelBtn.sizing(Sizing.fixed(60), Sizing.fixed(20)).margins(Insets.right(6));
         
         ButtonComponent applyBtn = UIComponents.button(Text.literal("Apply").formatted(Formatting.GREEN, Formatting.BOLD), b -> {
             ClientPlayNetworking.send(new ApplyColorPayload(targetPos, selectedColor));
             this.close();
         });
-        applyBtn.sizing(Sizing.fixed(80), Sizing.fixed(20));
+        applyBtn.sizing(Sizing.fixed(70), Sizing.fixed(20));
 
         footer.child(cancelBtn).child(applyBtn);
 
-        // --- СБОРКА ОКНА ---
-        window.child(header);
-        window.child(separatorTop);
-        window.child(content);
-        window.child(separatorBottom);
-        window.child(footer);
-
+        // Собираем всё вместе
+        window.child(header).child(separatorTop).child(content).child(separatorBottom).child(footer);
         rootComponent.child(window);
     }
 }
