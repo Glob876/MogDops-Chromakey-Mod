@@ -3,18 +3,20 @@ package me.mogdop.client;
 import me.mogdop.ChromakeyBlock;
 import me.mogdop.ChromakeyMod;
 import me.mogdop.ChromakeyBlockEntity;
-import me.mogdop.OpenColorScreenPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class ChromakeyModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(OpenColorScreenPayload.ID, (payload, context) -> {
-            context.client().execute(() -> {
-                context.client().setScreen(new ChromakeyColorScreen(payload.pos()));
+        // Классический приемник пакета в 1.20.1
+        ClientPlayNetworking.registerGlobalReceiver(ChromakeyMod.OPEN_COLOR_SCREEN_ID, (client, handler, buf, responseSender) -> {
+            BlockPos pos = buf.readBlockPos();
+            client.execute(() -> {
+                client.setScreen(new ChromakeyColorScreen(pos));
             });
         });
 

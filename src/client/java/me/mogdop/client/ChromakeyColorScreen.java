@@ -9,9 +9,11 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
-import me.mogdop.ApplyColorPayload;
 import me.mogdop.ChromakeyColor;
+import me.mogdop.ChromakeyMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -28,38 +30,31 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
 
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
-        return OwoUIAdapter.create(this, Containers::verticalFlow); // Откат: UIContainers -> Containers в owo 0.12
+        return OwoUIAdapter.create(this, Containers::verticalFlow);
     }
 
     @Override
     protected void build(FlowLayout rootComponent) {
-        // Классический полупрозрачный фон майнкрафта для всего экрана, чтобы окно казалось "парящим"
         rootComponent
             .surface(Surface.VANILLA_TRANSLUCENT)
             .horizontalAlignment(HorizontalAlignment.CENTER)
             .verticalAlignment(VerticalAlignment.CENTER);
 
-        // Главное окно. 
         FlowLayout window = Containers.verticalFlow(Sizing.content(), Sizing.content());
-        
-        // 0xD0151515 — D0 это ~80% непрозрачности, 151515 — темный серый цвет. 
-        // 0x80555555 — полупрозрачная рамка.
         window.surface(Surface.flat(0xD0151515).and(Surface.outline(0x80555555)));
         window.padding(Insets.of(14));
         window.margins(Insets.of(20)); 
 
         // --- ШАПКА ОКНА ---
         FlowLayout header = Containers.horizontalFlow(Sizing.fill(100), Sizing.content());
-        header.child(Components.label(Text.literal("Chromakey Configuration").formatted(Formatting.WHITE, Formatting.BOLD)).shadow(true)); // Откат: UIComponents -> Components
+        header.child(Components.label(Text.literal("Chromakey Configuration").formatted(Formatting.WHITE, Formatting.BOLD)).shadow(true));
         
-        // Разделитель
         FlowLayout separatorTop = Containers.horizontalFlow(Sizing.fill(100), Sizing.fixed(1));
         separatorTop.surface(Surface.flat(0x80333333)).margins(Insets.vertical(8));
 
         // --- КОНТЕНТ ---
         FlowLayout content = Containers.horizontalFlow(Sizing.content(), Sizing.content());
         
-        // Левая колонка (Палитра)
         FlowLayout leftPanel = Containers.verticalFlow(Sizing.content(), Sizing.content());
         leftPanel.horizontalAlignment(HorizontalAlignment.CENTER);
         leftPanel.child(Components.label(Text.literal("Custom Color").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
@@ -92,12 +87,10 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
 
         leftPanel.child(colorPicker).child(hexInput);
 
-        // Правая колонка (Пресеты)
         FlowLayout rightPanel = Containers.verticalFlow(Sizing.content(), Sizing.content());
         rightPanel.margins(Insets.left(20));
         rightPanel.child(Components.label(Text.literal("Color Presets").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
 
-        // Сетка 4х2 (4 строки, 2 колонки)
         GridLayout presetGrid = Containers.grid(Sizing.content(), Sizing.content(), 4, 2);
         ChromakeyColor[] colors = ChromakeyColor.values();
         for (int i = 0; i < colors.length; i++) {
@@ -126,14 +119,17 @@ public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
         cancelBtn.sizing(Sizing.fixed(60), Sizing.fixed(20)).margins(Insets.right(6));
         
         ButtonComponent applyBtn = Components.button(Text.literal("Apply").formatted(Formatting.GREEN, Formatting.BOLD), b -> {
-            ClientPlayNetworking.send(new ApplyColorPayload(targetPos, selectedColor));
+            // Классическая отправка пакета применения цвета в 1.20.1
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeBlockPos(targetPos);
+            buf.writeInt(selectedColor);
+            ClientPlayNetworking.send(ChromakeyMod.APPLY_COLOR_ID, buf);
             this.close();
         });
         applyBtn.sizing(Sizing.fixed(70), Sizing.fixed(20));
 
         footer.child(cancelBtn).child(applyBtn);
 
-        // Собираем всё вместе
         window.child(header).child(separatorTop).child(content).child(separatorBottom).child(footer);
         rootComponent.child(window);
     }
