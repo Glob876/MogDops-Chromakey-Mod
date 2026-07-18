@@ -10,6 +10,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand; // Добавлен импорт Hand
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,14 +38,15 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        // Исправлено: в 1.20.1 метод onUse() является public и принимает аргумент Hand hand
         if (player.getMainHandStack().getItem() instanceof ChromakeyControllerItem ||
             player.getOffHandStack().getItem() instanceof ChromakeyControllerItem) {
             return ActionResult.PASS;
         }
 
         if (player.isSneaking()) {
-            if (!world.isClient) { // Откат: метод isClient() -> поле isClient в 1.21.1
+            if (!world.isClient) {
                 boolean newLit = !state.get(LIT);
                 int existingColor = findExistingCustomColor(world, pos);
                 propagateState(world, pos, newLit, existingColor != -1 ? existingColor : null);
@@ -56,7 +58,8 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+        // Исправлено: в 1.20.1 метод calcBlockBreakingDelta() должен быть public
         if (player.isSneaking()) { return 1.0f; }
         return super.calcBlockBreakingDelta(state, player, world, pos);
     }
