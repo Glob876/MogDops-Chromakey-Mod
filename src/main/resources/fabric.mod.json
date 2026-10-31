@@ -1,33 +1,33 @@
 {
-	"schemaVersion": 1,
-	"id": "mogdops-chromakey-mod",
-	"version": "${version}",
-	"name": "MogDop's Chromakey Mod",
-	"icon": "assets/mogdops-chromakey-mod/icon.png",
-	"description": "A Mod for functional chromakey effects!",
-	"authors": [
-		"MogDop/Glob876"
-	],
-	"contact": {
-		"homepage": "https://github.com/Glob876/MogDops-Chromakey-Mod",
-		"sources": "https://github.com/Glob876/MogDops-Chromakey-Mod",
-		"issues": "https://github.com/Glob876/MogDops-Chromakey-Mod/issues"
-	},
-	"license": "MIT",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"me.mogdop.ChromakeyMod"
-		],
-		"client": [
-			"me.mogdop.client.ChromakeyModClient"
-		]
-	},
-	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.11",
-		"java": ">=21",
-		"fabric-api": "*",
-		"owo": ">=0.12.14"
-	}
+  "schemaVersion": 1,
+  "id": "mogdops-chromakey-mod",
+  "version": "${version}",
+  "name": "MogDop's Chromakey Mod",
+  "icon": "assets/mogdops-chromakey-mod/icon.png",
+  "description": "A Mod for functional chromakey effects!",
+  "authors": [
+    "MogDop/Glob876"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Glob876/MogDops-Chromakey-Mod",
+    "sources": "https://github.com/Glob876/MogDops-Chromakey-Mod",
+    "issues": "https://github.com/Glob876/MogDops-Chromakey-Mod/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.mogdop.ChromakeyMod"
+    ],
+    "client": [
+      "me.mogdop.client.ChromakeyModClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "=1.21.4",
+    "java": ">=21",
+    "fabric-api": "*",
+    "owo": ">=0.12.20"
+  }
 }

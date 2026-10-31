@@ -24,13 +24,8 @@ public class ChromakeyModClient implements ClientModInitializer {
                     return -1;
                 }
                 if (world != null && pos != null) {
-                    BlockEntity be = world.getBlockEntity(pos);
-                    if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                        int customColor = chromakeyBe.getCustomColor();
-                        if (customColor != -1) {
-                            return customColor;
-                        }
-                    }
+                    Object color = world.getBlockEntityRenderData(pos);
+                    if (color instanceof Integer rgb && rgb != -1) return rgb;
                 }
                 return state.get(ChromakeyBlock.COLOR).getColorHex();
             }

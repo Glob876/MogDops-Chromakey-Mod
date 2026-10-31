@@ -1,31 +1,36 @@
-# MogDop's Chromakey Mod 🎬🟢🔵🔴
+# MogDop's Chromakey Mod — Fabric 1.21.4
 
-A Fabric mod for Minecraft that adds functional, glowing chromakey blocks and convenient tools to control them. Designed for video editing, streaming, and special effects.
+Chromakey blocks with eight color presets, a custom RGB palette and connected-wall controls.
 
-## ✨ Features
+## Installation
 
-* **Connected Chromakey Blocks:** Supports Green, Blue, and Red colors for background removal.
-* **Toggleable Lighting:** Blocks can emit light to eliminate unwanted shadows in your shots.
-* **Flood Fill Propagation:** Toggling or recoloring a block instantly updates the entire connected structure.
-* **Chromakey Controller:** A convenient handheld tool to cycle colors across whole walls.
+Minecraft **1.21.4**, Java **21+**, Fabric Loader 0.18.4+, Fabric API 0.119.4+1.21.4 and owo-lib 0.12.20+1.21.4.
+Install the mod and its dependencies on both the client and the server. This JAR targets Fabric; other loaders are not advertised as supported without a separate compatibility test.
 
-## 🎮 Usage & Controls
+## Controls
 
-* **Toggle Light (On/Off):** 
-  Sneak (Shift) + Right-Click a block with an empty hand to toggle the light of the entire connected wall.
-* **Change Wall Color:** 
-  Right-Click any chromakey block while holding the **Chromakey Controller** to cycle the color of the entire structure: Green ➡️ Blue ➡️ Red ➡️ Green.
+- Sneak and right-click a chromakey block without the controller to toggle the connected wall's light.
+- Right-click with the Chromakey Controller to open the palette, enter a `#RRGGBB` color or choose a preset, then press **Apply**.
+- Colors persist in the world and synchronize to connected clients.
+- Sneaking also allows instant block breaking, as in the original mod.
 
-## 💻 Development & Building
+## Development
 
-* **Run Client (Testing):**
-  ```bash
-  ./gradlew runClient
-  ```
-* **Build Mod JAR:**
-  ```bash
-  ./gradlew build
-  ```
-  The compiled `.jar` file will be generated in the `build/libs/` directory.
+Use JDK 25 to run the Gradle wrapper. The compiled mod targets the Java version listed above.
 
-This version ONLY for 1.21.11.
+```sh
+./gradlew build
+./gradlew runClient
+```
+
+Release JARs are in `build/libs/`. The `-sources.jar` is for development, not installation.
+
+The isolated integration check creates a disposable world under `build/qa-client`:
+
+```sh
+./gradlew -Pqa runQaClient
+# Headless Linux:
+xvfb-run -a ./gradlew -Pqa runQaClient
+```
+
+It checks registration, connected lighting and color changes, disconnected blocks, NBT persistence, opening the menu with the controller, and client/server color synchronization. Its `chromakey-qa` entrypoint is excluded from release JARs. Results and screenshots are under `build/qa-client`.

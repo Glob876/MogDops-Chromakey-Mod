@@ -7,11 +7,11 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 
 public class ChromakeyBlockEntity extends BlockEntity {
+    @Override
+    public Object getRenderData() { return customColor; }
     private int customColor = -1;
 
     public ChromakeyBlockEntity(BlockPos pos, BlockState state) {
@@ -23,7 +23,7 @@ public class ChromakeyBlockEntity extends BlockEntity {
     }
 
     public void setCustomColor(int color) {
-        this.customColor = color;
+        this.customColor = color & 0xFFFFFF;
         this.markDirty();
         if (world != null) {
             world.updateListeners(pos, getCachedState(), getCachedState(), 3);
@@ -31,16 +31,16 @@ public class ChromakeyBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeData(WriteView view) {
-        super.writeData(view);
+    protected void writeNbt(NbtCompound view, RegistryWrapper.WrapperLookup registries) {
+        super.writeNbt(view, registries);
         view.putInt("custom_color", this.customColor);
     }
 
     @Override
-    protected void readData(ReadView view) {
+    protected void readNbt(NbtCompound view, RegistryWrapper.WrapperLookup registries) {
         int oldColor = this.customColor;
-        super.readData(view);
-        this.customColor = view.getInt("custom_color", -1);
+        super.readNbt(view, registries);
+        this.customColor = view.contains("custom_color") ? view.getInt("custom_color") : -1;
         
         // Исправление мгновенного применения: Форсируем перерисовку чанка при изменении цвета
         if (this.world != null && this.world.isClient() && this.customColor != oldColor) {

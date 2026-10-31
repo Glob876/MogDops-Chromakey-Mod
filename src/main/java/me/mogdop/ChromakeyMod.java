@@ -71,11 +71,15 @@ public class ChromakeyMod implements ModInitializer {
 
         ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
-                World world = context.player().getEntityWorld(); // Исправлено: Entity#getWorld() -> Entity#getEntityWorld() в 1.21.9+
+                World world = context.player().getServerWorld();
                 BlockPos pos = payload.pos();
+                if (context.player().isSpectator()
+                    || context.player().squaredDistanceTo(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5) > 64
+                    || (context.player().getMainHandStack().getItem() != CHROMAKEY_CONTROLLER && context.player().getOffHandStack().getItem() != CHROMAKEY_CONTROLLER)
+                    || !world.isChunkLoaded(pos)) return;
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
-                    chromakeyBlock.propagateState(world, pos, null, payload.rgb());
+                    chromakeyBlock.propagateState(world, pos, null, payload.rgb() & 0xFFFFFF);
                     context.player().sendMessage(Text.literal("Applied color: " + String.format("#%06X", payload.rgb())).formatted(Formatting.GREEN), true);
                 }
             });
