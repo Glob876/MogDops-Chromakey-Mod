@@ -15,6 +15,8 @@ import java.util.List;
 public class ChromakeyModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(me.mogdop.OpenColorScreenPayload.ID,
+            (payload, context) -> context.client().gui.setScreen(new ChromakeyColorScreen(payload.pos())));
         // Регистрируем окрашивание блока через BlockColorRegistry для 26.2
         BlockColorRegistry.register(List.of(new BlockTintSource() {
             @Override
@@ -25,6 +27,8 @@ public class ChromakeyModClient implements ClientModInitializer {
                     return -1;
                 }
                 
+                if (level != null && pos != null && level.getBlockEntity(pos) instanceof me.mogdop.ChromakeyBlockEntity entity
+                    && entity.getCustomColor() != -1) return 0xFF000000 | entity.getCustomColor();
                 ChromakeyColor color = state.getValue(ChromakeyBlock.COLOR);
                 return color.getColorHex();
             }

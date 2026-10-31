@@ -1,7 +1,9 @@
 package me.mogdop;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -13,13 +15,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-public class ChromakeyBlock extends Block {
+public class ChromakeyBlock extends Block implements EntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final EnumProperty<ChromakeyColor> COLOR = EnumProperty.create("color", ChromakeyColor.class);
 
@@ -29,19 +32,23 @@ public class ChromakeyBlock extends Block {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        // Если в любой из рук контроллер, передаем управление ему
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ChromakeyBlockEntity(pos, state);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (player.getMainHandItem().getItem() instanceof ChromakeyControllerItem ||
             player.getOffhandItem().getItem() instanceof ChromakeyControllerItem) {
             return InteractionResult.PASS;
         }
 
-        // Включаем/выключаем только если игрок сидит (Shift)
         if (player.isShiftKeyDown()) {
-            if (!level.isClientSide()) {
-                BlockState newState = state.cycle(LIT);
-                level.setBlock(pos, newState, 3);
-                propagateState(level, pos, newState); // Распространяем сигнал на соседние блоки
+            if (!world.isClientSide()) {
+                boolean newLit = !state.getValue(LIT);
+                // Ищем уже существующий кастомный цвет в структуре перед активацией
+                int existingColor = findExistingCustomColor(world, pos);
+                propagateState(world, pos, newLit, existingColor != -1 ? existingColor : null);
             }
             return InteractionResult.SUCCESS;
         }
@@ -51,10 +58,7 @@ public class ChromakeyBlock extends Block {
 
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter world, BlockPos pos) {
-        // Если игрок зажал Shift, блок ломается мгновенно (даже рукой)
-        if (player.isShiftKeyDown()) {
-            return 1.0f;
-        }
+        if (player.isShiftKeyDown()) { return 1.0f; }
         return super.getDestroyProgress(state, player, world, pos);
     }
 
@@ -63,8 +67,8 @@ public class ChromakeyBlock extends Block {
         builder.add(LIT, COLOR);
     }
 
-    // Алгоритм поиска в ширину (Flood Fill) для одновременного переключения стакающихся блоков
-    public void propagateState(Level world, BlockPos startPos, BlockState targetState) {
+    // Вспомогательный алгоритм для поиска первого попавшегося кастомного цвета в структуре
+    private int findExistingCustomColor(Level world, BlockPos startPos) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
         queue.add(startPos);
@@ -75,18 +79,50 @@ public class ChromakeyBlock extends Block {
             BlockState currentState = world.getBlockState(current);
 
             if (currentState.getBlock() == this) {
-                boolean needsUpdate = currentState.getValue(LIT) != targetState.getValue(LIT) ||
-                                      currentState.getValue(COLOR) != targetState.getValue(COLOR);
-
-                if (needsUpdate) {
-                    world.setBlock(current, currentState
-                        .setValue(LIT, targetState.getValue(LIT))
-                        .setValue(COLOR, targetState.getValue(COLOR)),
-                        3
-                    );
+                BlockEntity be = world.getBlockEntity(current);
+                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                    int color = chromakeyBe.getCustomColor();
+                    if (color != -1) {
+                        return color; // Цвет найден!
+                    }
                 }
 
-                // Проверяем все 6 направлений вокруг блока
+                for (Direction dir : Direction.values()) {
+                    BlockPos neighbor = current.relative(dir);
+                    if (!visited.contains(neighbor) && world.getBlockState(neighbor).getBlock() == this) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+        }
+        return -1; // Кастомного цвета в структуре пока нет
+    }
+
+    public void propagateState(Level world, BlockPos startPos, @Nullable Boolean targetLit, @Nullable Integer targetColor) {
+        Set<BlockPos> visited = new HashSet<>();
+        Queue<BlockPos> queue = new LinkedList<>();
+        queue.add(startPos);
+        visited.add(startPos);
+
+        while (!queue.isEmpty()) {
+            BlockPos current = queue.poll();
+            BlockState currentState = world.getBlockState(current);
+
+            if (currentState.getBlock() == this) {
+                if (targetColor != null) {
+                    BlockEntity be = world.getBlockEntity(current);
+                    if (be instanceof ChromakeyBlockEntity chromakeyBe) {
+                        if (chromakeyBe.getCustomColor() != targetColor) {
+                            chromakeyBe.setCustomColor(targetColor);
+                        }
+                    }
+                }
+
+                if (targetLit != null && currentState.getValue(LIT) != targetLit) {
+                    world.setBlock(current, currentState.setValue(LIT, targetLit), 3);
+                }
+
                 for (Direction dir : Direction.values()) {
                     BlockPos neighbor = current.relative(dir);
                     if (!visited.contains(neighbor) && world.getBlockState(neighbor).getBlock() == this) {

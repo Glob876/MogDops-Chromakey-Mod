@@ -39,6 +39,10 @@ public class ChromakeyMod implements ModInitializer {
         )
     );
 
+    public static final net.minecraft.world.level.block.entity.BlockEntityType<ChromakeyBlockEntity> CHROMAKEY_BLOCK_ENTITY = Registry.register(
+        BuiltInRegistries.BLOCK_ENTITY_TYPE, Identifier.fromNamespaceAndPath(MOD_ID, "chromakey_block_entity"),
+        new net.minecraft.world.level.block.entity.BlockEntityType<>(ChromakeyBlockEntity::new, java.util.Set.of(GREEN_CHROMAKEY_BLOCK)));
+
     // Ключ и регистрация Предмета блока
     public static final ResourceKey<Item> GREEN_CHROMAKEY_BLOCK_ITEM_KEY = ResourceKey.create(
         Registries.ITEM,
@@ -124,7 +128,20 @@ public class ChromakeyMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initializing MogDops Chromakey Mod for Minecraft 26.2...");
+        LOGGER.info("Initializing MogDops Chromakey Mod for Minecraft 26.3...");
         ChromakeyConfig.load();
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(OpenColorScreenPayload.ID, OpenColorScreenPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(ApplyColorPayload.ID, ApplyColorPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
+            var player = context.player();
+            var world = player.level();
+            var pos = payload.pos();
+            if (player.isSpectator() || player.distanceToSqr(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5) > 64
+                || (player.getMainHandItem().getItem() != CHROMAKEY_CONTROLLER && player.getOffhandItem().getItem() != CHROMAKEY_CONTROLLER)
+                || !world.hasChunkAt(pos)) return;
+            if (world.getBlockState(pos).getBlock() instanceof ChromakeyBlock block) {
+                block.propagateState(world, pos, null, payload.rgb() & 0xFFFFFF);
+            }
+        });
     }
 }

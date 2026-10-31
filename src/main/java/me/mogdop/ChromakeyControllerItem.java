@@ -22,37 +22,9 @@ public class ChromakeyControllerItem extends Item {
         BlockState state = world.getBlockState(pos);
         Player player = context.getPlayer();
 
-        if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
-            if (!world.isClientSide()) {
-                ChromakeyColor currentColor = state.getValue(ChromakeyBlock.COLOR);
-                ChromakeyColor nextColor;
-
-                // Проверяем, зажат ли у игрока SHIFT (Sneaking)
-                if (player != null && player.isShiftKeyDown()) {
-                    // Переключаем ТОЛЬКО основные цвета хромакея в порядке: GREEN -> BLUE -> RED -> GREEN
-                    nextColor = switch (currentColor) {
-                        case GREEN -> ChromakeyColor.BLUE;
-                        case BLUE -> ChromakeyColor.RED;
-                        default -> ChromakeyColor.GREEN; // Сбрасывает любые другие декоративные цвета на GREEN
-                    };
-                } else {
-                    // Обычное нажатие ПКМ: перебираем все доступные цвета по полному кругу
-                    ChromakeyColor[] colors = ChromakeyColor.values();
-                    int nextIndex = (currentColor.ordinal() + 1) % colors.length;
-                    ChromakeyColor nextColorResult = colors[nextIndex];
-                    nextColor = nextColorResult;
-                }
-
-                BlockState newState = state.setValue(ChromakeyBlock.COLOR, nextColor);
-                world.setBlock(pos, newState, 3);
-                chromakeyBlock.propagateState(world, pos, newState); // Перекрашиваем всю стену!
-
-                // Отправляем сообщение только если в конфиге включен параметр showColorChangeMessage
-                if (player != null && ChromakeyConfig.showColorChangeMessage) {
-                    player.sendSystemMessage(Component.translatable("message.mogdops-chromakey-mod.color_changed", 
-                        Component.translatable("color.mogdops-chromakey-mod." + nextColor.getSerializedName())
-                    ).withStyle(ChatFormatting.GREEN));
-                }
+        if (state.getBlock() instanceof ChromakeyBlock) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(serverPlayer, new OpenColorScreenPayload(pos));
             }
             return InteractionResult.SUCCESS;
         }
