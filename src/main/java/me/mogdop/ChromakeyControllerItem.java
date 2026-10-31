@@ -21,9 +21,11 @@ public class ChromakeyControllerItem extends Item {
         BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() instanceof ChromakeyBlock) {
-            if (!world.isClient() && context.getPlayer() instanceof ServerPlayerEntity serverPlayer) {
+            if (!world.isClient && context.getPlayer() instanceof ServerPlayerEntity) {
                 // Отправляем пакет клиенту для открытия меню и передаем позицию блока
-                ServerPlayNetworking.send(serverPlayer, new OpenColorScreenPayload(pos));
+                net.minecraft.network.PacketByteBuf buf = net.fabricmc.fabric.api.networking.v1.PacketByteBufs.create();
+                buf.writeBlockPos(pos);
+                ServerPlayNetworking.send((ServerPlayerEntity) context.getPlayer(), ChromakeyMod.OPEN_SCREEN, buf);
             }
             return ActionResult.SUCCESS;
         }

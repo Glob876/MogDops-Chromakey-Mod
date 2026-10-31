@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "item": "minecraft:quartz"
+    },
+    "P": {
+      "item": "mogdops-chromakey-mod:chromakey_processor"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "A",
+    "P",
+    "I"
+  ],
+  "result": {
+    "count": 1,
+    "item": "mogdops-chromakey-mod:chromakey_controller"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "mogdops-chromakey-mod:chromakey_processor"
+    },
+    "G": {
+      "item": "minecraft:lime_dye"
+    },
+    "B": {
+      "item": "mogdops-chromakey-mod:chromakey_blank"
+    },
+    "L": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "pattern": [
+    "GPG",
+    "GBG",
+    "GLG"
+  ],
+  "result": {
+    "count": 8,
+    "item": "mogdops-chromakey-mod:green_chromakey_block"
+  }
+}

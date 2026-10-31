@@ -32,19 +32,19 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new ChromakeyBlockEntity(pos, state);
+    public @Nullable BlockEntity createBlockEntity(BlockView world) {
+        return new ChromakeyBlockEntity();
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, net.minecraft.util.Hand hand, BlockHitResult hit) {
         if (player.getMainHandStack().getItem() instanceof ChromakeyControllerItem ||
             player.getOffHandStack().getItem() instanceof ChromakeyControllerItem) {
             return ActionResult.PASS;
         }
 
         if (player.isSneaking()) {
-            if (!world.isClient()) {
+            if (!world.isClient) {
                 boolean newLit = !state.get(LIT);
                 // Ищем уже существующий кастомный цвет в структуре перед активацией
                 int existingColor = findExistingCustomColor(world, pos);
@@ -57,7 +57,7 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (player.isSneaking()) { return 1.0f; }
         return super.calcBlockBreakingDelta(state, player, world, pos);
     }
@@ -80,8 +80,8 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
 
             if (currentState.getBlock() == this) {
                 BlockEntity be = world.getBlockEntity(current);
-                if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                    int color = chromakeyBe.getCustomColor();
+                if (be instanceof ChromakeyBlockEntity) {
+                    int color = ((ChromakeyBlockEntity) be).getCustomColor();
                     if (color != -1) {
                         return color; // Цвет найден!
                     }
@@ -112,9 +112,9 @@ public class ChromakeyBlock extends Block implements BlockEntityProvider {
             if (currentState.getBlock() == this) {
                 if (targetColor != null) {
                     BlockEntity be = world.getBlockEntity(current);
-                    if (be instanceof ChromakeyBlockEntity chromakeyBe) {
-                        if (chromakeyBe.getCustomColor() != targetColor) {
-                            chromakeyBe.setCustomColor(targetColor);
+                    if (be instanceof ChromakeyBlockEntity) {
+                        if (((ChromakeyBlockEntity) be).getCustomColor() != targetColor) {
+                            ((ChromakeyBlockEntity) be).setCustomColor(targetColor);
                         }
                     }
                 }

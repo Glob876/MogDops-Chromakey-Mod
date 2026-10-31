@@ -1,142 +1,135 @@
 package me.mogdop.client;
 
-import io.wispforest.owo.ui.base.BaseOwoScreen;
-import io.wispforest.owo.ui.component.ButtonComponent;
-import io.wispforest.owo.ui.component.ColorPickerComponent;
-import io.wispforest.owo.ui.component.UIComponents;
-import io.wispforest.owo.ui.component.TextBoxComponent;
-import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.container.UIContainers;
-import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.core.*;
-import me.mogdop.ApplyColorPayload;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.mogdop.ChromakeyColor;
+import me.mogdop.ChromakeyMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.NotNull;
 
-public class ChromakeyColorScreen extends BaseOwoScreen<FlowLayout> {
-
+public class ChromakeyColorScreen extends Screen {
     private final BlockPos targetPos;
-    private int selectedColor = 0xFF00FF33; // Цвет по умолчанию
+    private int selectedColor = 0x00FF33;
+    private float hue = .3667f, saturation = 1, brightness = 1;
+    private TextFieldWidget hexInput;
+    private ButtonWidget apply;
+    private int left, top, dragging;
+    private boolean updating;
 
     public ChromakeyColorScreen(BlockPos pos) {
-        this.targetPos = pos;
+        super(new LiteralText("Chromakey Configuration"));
+        targetPos = pos;
     }
 
     @Override
-    protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
-        return OwoUIAdapter.create(this, UIContainers::verticalFlow);
-    }
-
-    @Override
-    protected void build(FlowLayout rootComponent) {
-        // Классический полупрозрачный фон майнкрафта для всего экрана, чтобы окно казалось "парящим"
-        rootComponent
-            .surface(Surface.VANILLA_TRANSLUCENT)
-            .horizontalAlignment(HorizontalAlignment.CENTER)
-            .verticalAlignment(VerticalAlignment.CENTER);
-
-        // Главное окно. 
-        FlowLayout window = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
-        
-        // 0xD0151515 — D0 это ~80% непрозрачности, 151515 — темный серый цвет. 
-        // 0x80555555 — полупрозрачная рамка.
-        window.surface(Surface.flat(0xD0151515).and(Surface.outline(0x80555555)));
-        window.padding(Insets.of(14));
-        // margins(20) гарантирует, что интерфейс НИКОГДА не коснется краев экрана
-        window.margins(Insets.of(20)); 
-
-        // --- ШАПКА ОКНА ---
-        FlowLayout header = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.content());
-        header.child(UIComponents.label(Text.literal("Chromakey Configuration").formatted(Formatting.WHITE, Formatting.BOLD)).shadow(true));
-        
-        // Разделитель
-        FlowLayout separatorTop = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.fixed(1));
-        separatorTop.surface(Surface.flat(0x80333333)).margins(Insets.vertical(8));
-
-        // --- КОНТЕНТ ---
-        FlowLayout content = UIContainers.horizontalFlow(Sizing.content(), Sizing.content());
-        
-        // Левая колонка (Палитра)
-        FlowLayout leftPanel = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
-        leftPanel.horizontalAlignment(HorizontalAlignment.CENTER);
-        leftPanel.child(UIComponents.label(Text.literal("Custom Color").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
-
-        // Немного уменьшили палитру, чтобы всё было еще компактнее
-        ColorPickerComponent colorPicker = new ColorPickerComponent();
-        colorPicker.sizing(Sizing.fixed(130), Sizing.fixed(110));
-
-        TextBoxComponent hexInput = UIComponents.textBox(Sizing.fixed(130));
-        hexInput.setText("#00FF33");
+    protected void init() {
+        left = (width - 310) / 2;
+        top = (height - 218) / 2;
+        hexInput = new TextFieldWidget(textRenderer, left + 14, top + 159, 130, 20, new LiteralText("Hex color"));
         hexInput.setMaxLength(7);
-        hexInput.margins(Insets.top(6));
-
-        colorPicker.onChanged().subscribe(color -> {
-            selectedColor = color.rgb();
-            String hex = String.format("#%06X", (0xFFFFFF & selectedColor));
-            if (!hexInput.getText().equalsIgnoreCase(hex)) {
-                hexInput.setText(hex);
-            }
+        hexInput.setText(String.format("#%06X", selectedColor));
+        hexInput.setChangedListener(text -> {
+            boolean valid = text.matches("^#[0-9A-Fa-f]{6}$");
+            apply.active = valid;
+            if (valid && !updating) setColor(Integer.parseInt(text.substring(1), 16), false);
         });
-
-        hexInput.onChanged().subscribe(text -> {
-            if (text.matches("^#[0-9A-Fa-f]{6}$")) {
-                try {
-                    int parsedColor = Integer.parseInt(text.substring(1), 16);
-                    selectedColor = parsedColor;
-                    colorPicker.selectedColor(Color.ofRgb(parsedColor));
-                } catch (NumberFormatException ignored) {}
-            }
-        });
-
-        leftPanel.child(colorPicker).child(hexInput);
-
-        // Правая колонка (Пресеты)
-        FlowLayout rightPanel = UIContainers.verticalFlow(Sizing.content(), Sizing.content());
-        rightPanel.margins(Insets.left(20));
-        rightPanel.child(UIComponents.label(Text.literal("Color Presets").formatted(Formatting.GRAY)).margins(Insets.bottom(6)));
-
-        // Сетка 4х2 (4 строки, 2 колонки)
-        GridLayout presetGrid = UIContainers.grid(Sizing.content(), Sizing.content(), 4, 2);
+        children.add(hexInput);
         ChromakeyColor[] colors = ChromakeyColor.values();
         for (int i = 0; i < colors.length; i++) {
-            ChromakeyColor cc = colors[i];
-            ButtonComponent btn = UIComponents.button(Text.translatable("color.mogdops-chromakey-mod." + cc.asString()), b -> {
-                selectedColor = cc.getColorHex();
-                String hex = String.format("#%06X", (0xFFFFFF & selectedColor));
-                hexInput.setText(hex);
-                colorPicker.selectedColor(Color.ofRgb(selectedColor));
-            });
-            btn.sizing(Sizing.fixed(65), Sizing.fixed(20)).margins(Insets.of(2));
-            presetGrid.child(btn, i / 2, i % 2);
+            final ChromakeyColor color = colors[i];
+            addButton(new ButtonWidget(left + 164 + (i % 2) * 66, top + 50 + (i / 2) * 24, 64, 20,
+                new TranslatableText("color.mogdops-chromakey-mod." + color.asString()), button -> setColor(color.getColorHex(), true)));
         }
-        rightPanel.child(presetGrid);
-
-        content.child(leftPanel).child(rightPanel);
-
-        // --- ПОДВАЛ ---
-        FlowLayout separatorBottom = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.fixed(1));
-        separatorBottom.surface(Surface.flat(0x80333333)).margins(Insets.vertical(8));
-
-        FlowLayout footer = UIContainers.horizontalFlow(Sizing.fill(100), Sizing.content());
-        footer.horizontalAlignment(HorizontalAlignment.RIGHT);
-        
-        ButtonComponent cancelBtn = UIComponents.button(Text.literal("Cancel"), b -> this.close());
-        cancelBtn.sizing(Sizing.fixed(60), Sizing.fixed(20)).margins(Insets.right(6));
-        
-        ButtonComponent applyBtn = UIComponents.button(Text.literal("Apply").formatted(Formatting.GREEN, Formatting.BOLD), b -> {
-            ClientPlayNetworking.send(new ApplyColorPayload(targetPos, selectedColor));
-            this.close();
-        });
-        applyBtn.sizing(Sizing.fixed(70), Sizing.fixed(20));
-
-        footer.child(cancelBtn).child(applyBtn);
-
-        // Собираем всё вместе
-        window.child(header).child(separatorTop).child(content).child(separatorBottom).child(footer);
-        rootComponent.child(window);
+        addButton(new ButtonWidget(left + 164, top + 190, 60, 20, new TranslatableText("gui.cancel"), b -> onClose()));
+        apply = addButton(new ButtonWidget(left + 230, top + 190, 66, 20, new LiteralText("Apply"), b -> {
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeBlockPos(targetPos); buf.writeInt(selectedColor);
+            ClientPlayNetworking.send(ChromakeyMod.APPLY_COLOR, buf);
+            onClose();
+        }));
+        apply.active = hexInput.getText().matches("^#[0-9A-Fa-f]{6}$");
     }
+
+    private void setColor(int rgb, boolean updateText) {
+        selectedColor = rgb & 0xFFFFFF;
+        float[] hsv = java.awt.Color.RGBtoHSB((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255, null);
+        hue = hsv[0]; saturation = hsv[1]; brightness = hsv[2];
+        if (updateText) updateText();
+    }
+
+    private void updateText() {
+        updating = true;
+        hexInput.setText(String.format("#%06X", selectedColor));
+        updating = false;
+    }
+
+    private boolean pick(double x, double y) {
+        if (dragging == 1) {
+            saturation = (float) Math.max(0, Math.min(1, (x - left - 14) / 129));
+            brightness = 1 - (float) Math.max(0, Math.min(1, (y - top - 50) / 89));
+        } else if (dragging == 2) {
+            hue = (float) Math.max(0, Math.min(1, (x - left - 14) / 129));
+        } else return false;
+        selectedColor = java.awt.Color.HSBtoRGB(hue, saturation, brightness) & 0xFFFFFF;
+        updateText();
+        return true;
+    }
+
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
+        if (button == 0 && x >= left + 14 && x < left + 144) {
+            if (y >= top + 50 && y < top + 140) dragging = 1;
+            if (y >= top + 144 && y < top + 154) dragging = 2;
+            if (pick(x, y)) { setFocused(null); return true; }
+        }
+        return super.mouseClicked(x, y, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
+        return button == 0 && pick(x, y) || super.mouseDragged(x, y, button, dx, dy);
+    }
+
+    @Override
+    public boolean mouseReleased(double x, double y, int button) {
+        dragging = 0;
+        return super.mouseReleased(x, y, button);
+    }
+
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        renderBackground(matrices);
+        fill(matrices, left, top, left + 310, top + 218, 0xE0151515);
+        drawStringWithShadow(matrices, textRenderer, title.getString(), left + 14, top + 14, 0xFFFFFF);
+        drawStringWithShadow(matrices, textRenderer, "Custom Color", left + 14, top + 34, 0xAAAAAA);
+        drawStringWithShadow(matrices, textRenderer, "Color Presets", left + 164, top + 34, 0xAAAAAA);
+        for (int x = 0; x < 130; x += 2) {
+            for (int y = 0; y < 90; y += 2)
+                fill(matrices, left + 14 + x, top + 50 + y, left + 16 + x, top + 52 + y,
+                    java.awt.Color.HSBtoRGB(hue, x / 129f, 1 - y / 89f));
+            fill(matrices, left + 14 + x, top + 144, left + 16 + x, top + 154, java.awt.Color.HSBtoRGB(x / 129f, 1, 1));
+        }
+        int sx = left + 14 + Math.round(saturation * 129), sy = top + 50 + Math.round((1 - brightness) * 89);
+        fill(matrices, sx - 2, sy - 2, sx + 3, sy + 3, 0xFF000000);
+        fill(matrices, sx - 1, sy - 1, sx + 2, sy + 2, 0xFFFFFFFF);
+        int hx = left + 14 + Math.round(hue * 129);
+        fill(matrices, hx, top + 143, hx + 1, top + 155, 0xFFFFFFFF);
+        fill(matrices, left + 14, top + 190, left + 144, top + 210, 0xFF000000 | selectedColor);
+        hexInput.render(matrices, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void tick() { hexInput.tick(); }
+    @Override
+    public boolean isPauseScreen() { return false; }
+    @Override
+    public void onClose() { client.openScreen(null); }
 }

@@ -1,82 +1,57 @@
 package me.mogdop;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ChromakeyMod implements ModInitializer {
     public static final String MOD_ID = "mogdops-chromakey-mod";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static final Identifier OPEN_SCREEN = id("open_color_screen");
+    public static final Identifier APPLY_COLOR = id("apply_color");
+    public static final Block GREEN_CHROMAKEY_BLOCK = Registry.register(Registry.BLOCK, id("green_chromakey_block"),
+        new ChromakeyBlock(AbstractBlock.Settings.of(Material.STONE).strength(1.5f).luminance(state -> state.get(ChromakeyBlock.LIT) ? 15 : 0)));
+    public static final BlockEntityType<ChromakeyBlockEntity> CHROMAKEY_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("chromakey_block_entity"),
+        BlockEntityType.Builder.create(ChromakeyBlockEntity::new, GREEN_CHROMAKEY_BLOCK).build(null));
+    public static final Item GREEN_CHROMAKEY_BLOCK_ITEM = Registry.register(Registry.ITEM, id("green_chromakey_block"), new BlockItem(GREEN_CHROMAKEY_BLOCK, new Item.Settings()));
+    public static final Item CHROMAKEY_CONTROLLER = Registry.register(Registry.ITEM, id("chromakey_controller"), new ChromakeyControllerItem(new Item.Settings().maxCount(1)));
+    public static final Item CHROMAKEY_PROCESSOR = Registry.register(Registry.ITEM, id("chromakey_processor"), new Item(new Item.Settings()));
+    public static final Item CHROMAKEY_BLANK = Registry.register(Registry.ITEM, id("chromakey_blank"), new Item(new Item.Settings()));
+    public static final ItemGroup CHROMAKEY_ITEM_GROUP = FabricItemGroupBuilder.create(id("chromakey_item_group"))
+        .icon(() -> new ItemStack(GREEN_CHROMAKEY_BLOCK_ITEM)).appendItems(items -> {
+            items.add(new ItemStack(GREEN_CHROMAKEY_BLOCK_ITEM)); items.add(new ItemStack(CHROMAKEY_CONTROLLER));
+            items.add(new ItemStack(CHROMAKEY_PROCESSOR)); items.add(new ItemStack(CHROMAKEY_BLANK));
+        }).build();
 
-    public static final RegistryKey<Block> GREEN_CHROMAKEY_BLOCK_KEY = RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, "green_chromakey_block"));
-    public static final Block GREEN_CHROMAKEY_BLOCK = Registry.register(Registries.BLOCK, GREEN_CHROMAKEY_BLOCK_KEY,
-        new ChromakeyBlock(AbstractBlock.Settings.create().registryKey(GREEN_CHROMAKEY_BLOCK_KEY).strength(1.5f).sounds(BlockSoundGroup.STONE).luminance(state -> state.get(ChromakeyBlock.LIT) ? 15 : 0))
-    );
-
-    public static final BlockEntityType<ChromakeyBlockEntity> CHROMAKEY_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(MOD_ID, "chromakey_block_entity"),
-        FabricBlockEntityTypeBuilder.create(ChromakeyBlockEntity::new, GREEN_CHROMAKEY_BLOCK).build()
-    );
-
-    public static final RegistryKey<Item> GREEN_CHROMAKEY_BLOCK_ITEM_KEY = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "green_chromakey_block"));
-    public static final Item GREEN_CHROMAKEY_BLOCK_ITEM = Registry.register(Registries.ITEM, GREEN_CHROMAKEY_BLOCK_ITEM_KEY,
-        new BlockItem(GREEN_CHROMAKEY_BLOCK, new Item.Settings().registryKey(GREEN_CHROMAKEY_BLOCK_ITEM_KEY).useBlockPrefixedTranslationKey())
-    );
-
-    public static final RegistryKey<Item> CHROMAKEY_CONTROLLER_KEY = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "chromakey_controller"));
-    public static final Item CHROMAKEY_CONTROLLER = Registry.register(Registries.ITEM, CHROMAKEY_CONTROLLER_KEY,
-        new ChromakeyControllerItem(new Item.Settings().registryKey(CHROMAKEY_CONTROLLER_KEY).maxCount(1))
-    );
-
-    public static final RegistryKey<Item> CHROMAKEY_PROCESSOR_KEY = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "chromakey_processor"));
-    public static final Item CHROMAKEY_PROCESSOR = Registry.register(Registries.ITEM, CHROMAKEY_PROCESSOR_KEY, new Item(new Item.Settings().registryKey(CHROMAKEY_PROCESSOR_KEY)));
-
-    public static final RegistryKey<Item> CHROMAKEY_BLANK_KEY = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "chromakey_blank"));
-    public static final Item CHROMAKEY_BLANK = Registry.register(Registries.ITEM, CHROMAKEY_BLANK_KEY, new Item(new Item.Settings().registryKey(CHROMAKEY_BLANK_KEY)));
-
-    public static final RegistryKey<ItemGroup> CHROMAKEY_ITEM_GROUP_KEY = RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of(MOD_ID, "chromakey_item_group"));
-    public static final ItemGroup CHROMAKEY_ITEM_GROUP = Registry.register(Registries.ITEM_GROUP, CHROMAKEY_ITEM_GROUP_KEY,
-        FabricItemGroup.builder().icon(() -> new ItemStack(GREEN_CHROMAKEY_BLOCK_ITEM)).displayName(Text.translatable("itemGroup.mogdops-chromakey-mod.chromakey_item_group"))
-            .entries((context, entries) -> { entries.add(GREEN_CHROMAKEY_BLOCK_ITEM); entries.add(CHROMAKEY_CONTROLLER); entries.add(CHROMAKEY_PROCESSOR); entries.add(CHROMAKEY_BLANK); }).build()
-    );
+    private static Identifier id(String path) { return new Identifier(MOD_ID, path); }
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Инициализация MogDops Chromakey Mod...");
         ChromakeyConfig.load();
-
-        PayloadTypeRegistry.playS2C().register(OpenColorScreenPayload.ID, OpenColorScreenPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(ApplyColorPayload.ID, ApplyColorPayload.CODEC);
-
-        ServerPlayNetworking.registerGlobalReceiver(ApplyColorPayload.ID, (payload, context) -> {
-            context.server().execute(() -> {
-                World world = context.player().getEntityWorld(); // Исправлено: Entity#getWorld() -> Entity#getEntityWorld() в 1.21.9+
-                BlockPos pos = payload.pos();
-                BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof ChromakeyBlock chromakeyBlock) {
-                    chromakeyBlock.propagateState(world, pos, null, payload.rgb());
-                    context.player().sendMessage(Text.literal("Applied color: " + String.format("#%06X", payload.rgb())).formatted(Formatting.GREEN), true);
+        ServerPlayNetworking.registerGlobalReceiver(APPLY_COLOR, (server, player, handler, buf, responseSender) -> {
+            final net.minecraft.util.math.BlockPos pos = buf.readBlockPos();
+            final int rgb = buf.readInt() & 0xFFFFFF;
+            server.execute(() -> {
+                // Only allow editing a loaded block within interaction range while holding the controller.
+                if (player.isSpectator() || player.squaredDistanceTo(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5) > 64
+                    || (player.getMainHandStack().getItem() != CHROMAKEY_CONTROLLER && player.getOffHandStack().getItem() != CHROMAKEY_CONTROLLER)
+                    || !player.world.isChunkLoaded(pos)) return;
+                BlockState state = player.world.getBlockState(pos);
+                if (state.getBlock() instanceof ChromakeyBlock) {
+                    ((ChromakeyBlock) state.getBlock()).propagateState(player.world, pos, null, rgb);
                 }
             });
         });

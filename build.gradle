@@ -15,6 +15,7 @@ apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
+base { archivesName = project.archives_base_name }
 
 repositories {
     mavenCentral()
@@ -48,9 +49,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    // Зависимости owo-lib
-    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
-    annotationProcessor "io.wispforest:owo-lib:${project.owo_version}"
+
 }
 
 processResources {
@@ -63,7 +62,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+	it.options.release = 8
 }
 
 tasks.withType(Javadoc).configureEach {
@@ -73,8 +72,8 @@ tasks.withType(Javadoc).configureEach {
 java {
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 jar {
@@ -100,4 +99,31 @@ publishing {
 
 	repositories {
 	}
+}
+// Development-only integration checks, excluded from published JARs.
+if (project.hasProperty('qa')) {
+    sourceSets {
+        qaClient {
+            compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+            runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+        }
+    }
+    loom {
+        mods { chromakey_qa { sourceSet sourceSets.qaClient } }
+        runs {
+            qaClient {
+                client()
+                source sourceSets.qaClient
+                runDir 'build/qa-client'
+                vmArg '-Dchromakey.qa=true'
+                vmArg '-Dorg.lwjgl.opengl.libname=/usr/lib/libGL.so.1'
+                programArgs '--width', '1000', '--height', '700'
+            }
+        }
+    }
+}
+
+// Minecraft 1.16.5 is tested on its original Java 8 runtime.
+tasks.withType(JavaExec).configureEach {
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(8) }
 }

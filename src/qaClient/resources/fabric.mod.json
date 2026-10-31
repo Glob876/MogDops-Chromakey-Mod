@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "chromakey-qa",
+  "version": "1.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.mogdop.qa.ClientQA"
+    ]
+  }
+}
